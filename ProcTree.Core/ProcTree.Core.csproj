@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbObject.cs" />
+    <Compile Include="DbObjectRepository.cs" />
+    <Compile Include="DbObjectUsageFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

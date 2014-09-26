@@ -13,11 +13,17 @@ namespace ProcTree.Core
         Trigger
     }
 
-    public class DbOjbect
+    public class DbObject
     {
         public string Name { get; set; }
         public DbObjectType Type { get; set; }
         public string Source { get; set; }
+        public List<DbObject> LinkedDbOjbects { get; set; }
+
+        public DbObject()
+        {
+            LinkedDbOjbects = new List<DbObject>();
+        }
 
         public static DbObjectType GetDbObjectType(string type)
         {
