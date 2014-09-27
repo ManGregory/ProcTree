@@ -1,17 +1,9 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using FirebirdSql;
-using FirebirdSql.Data;
-using FirebirdSql.Data.FirebirdClient;
 using ProcTree.Core;
 
 namespace pt
@@ -92,22 +84,16 @@ namespace pt
             var result = new List<DbObjectUsageFile>();
             if (File.Exists(file))
             {
-                var lines = GetTextWithoutComments(File.ReadAllText(file)).Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                var lines = GetTextWithoutComments(File.ReadAllText(file)).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
                 for (int lineNumber = 0; lineNumber < lines.Length; lineNumber++)
                 {
-                    var line = lines[lineNumber].ToLower(CultureInfo.InvariantCulture);                    
-                    foreach (var valueToFind in valuesToFind)
-                    {
-                        if (line.Contains(valueToFind.Name))
+                    var line = lines[lineNumber].ToLower(CultureInfo.InvariantCulture);
+                    result.AddRange(from valueToFind in valuesToFind
+                        where line.Contains(valueToFind.Name)
+                        select new DbObjectUsageFile
                         {
-                            result.Add(new DbObjectUsageFile
-                            {
-                                DbObject = valueToFind,
-                                LineNumber = lineNumber,
-                                PathToFile = file
-                            });
-                        }
-                    }
+                            DbObject = valueToFind, LineNumber = lineNumber, PathToFile = file
+                        });
                 }
             }
             return result;

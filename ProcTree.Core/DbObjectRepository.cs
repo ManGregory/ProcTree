@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FirebirdSql.Data.FirebirdClient;
 
 namespace ProcTree.Core
@@ -30,11 +28,13 @@ namespace ProcTree.Core
 
         private FbConnection GetConnection()
         {
-            var connBuilder = new FbConnectionStringBuilder();
-            connBuilder.UserID = UserName;
-            connBuilder.Password = UserPassword;
-            connBuilder.DataSource = DataSource;
-            connBuilder.Database = DbName;
+            var connBuilder = new FbConnectionStringBuilder
+            {
+                UserID = UserName,
+                Password = UserPassword,
+                DataSource = DataSource,
+                Database = DbName
+            };
             var conn = new FbConnection(connBuilder.ToString());
             return conn;
         }
