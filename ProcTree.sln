@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pt", "pt\pt.csproj", "{EBBB286D-2F18-4306-96DA-88CD48404430}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcTree.Core", "ProcTree.Core\ProcTree.Core.csproj", "{25AFDB4D-0943-486F-98A3-3BA620453F16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "ProcTree.Core\Core.csproj", "{25AFDB4D-0943-486F-98A3-3BA620453F16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcTreeGUI", "ProcTreeGUI\ProcTreeGUI.csproj", "{7C15AB13-7A1B-46EF-B609-14C2A1E50051}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{25AFDB4D-0943-486F-98A3-3BA620453F16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25AFDB4D-0943-486F-98A3-3BA620453F16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25AFDB4D-0943-486F-98A3-3BA620453F16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C15AB13-7A1B-46EF-B609-14C2A1E50051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C15AB13-7A1B-46EF-B609-14C2A1E50051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C15AB13-7A1B-46EF-B609-14C2A1E50051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C15AB13-7A1B-46EF-B609-14C2A1E50051}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
