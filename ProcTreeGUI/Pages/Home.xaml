@@ -29,15 +29,32 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <TextBlock Margin="5,5,5,5"  Grid.Row="0" Grid.Column="0" Text="Имя пользователя"></TextBlock>
-            <TextBox Name="TxtUserName" Margin="5,5,5,5" Grid.Row="0" Grid.Column="1">SYSDBA</TextBox>
-            <TextBlock Margin="5,5,5,5" Grid.Row="0" Grid.Column="2" Text="Пароль"></TextBlock>
-            <PasswordBox Name="TxtUserPassword" Margin="5,5,5,5" Grid.Row="0" Grid.Column="3" Password="masterkey"></PasswordBox>
-            <TextBlock Margin="5,5,5,5"  Grid.Row="1" Grid.Column="0" Text="Сервер"></TextBlock>
-            <TextBox Name="TxtServerName" Margin="5,5,5,5" Grid.Row="1" Grid.Column="1">localhost</TextBox>
-            <TextBlock Margin="5,5,5,5" Grid.Row="1" Grid.Column="2" Text="База данных"></TextBlock>
-            <TextBox Name="TxtDbName" Margin="5,5,5,5" Grid.Row="1" Grid.Column="3">d:/db/UPP20140127.FDB</TextBox>            
-            <Button Margin="5,5,5,5" Padding="5,5,5,5" Grid.Row="2" Grid.Column="3" Click="Button_Click">Поиск</Button>
+            <TextBlock VerticalAlignment="Center" Margin="5,5,5,5"  Grid.Row="0" Grid.Column="0" Text="Имя пользователя"></TextBlock>
+            <TextBox Height="25" Name="TxtUserName" Margin="5,5,5,5" Grid.Row="0" Grid.Column="1">SYSDBA</TextBox>
+            <TextBlock VerticalAlignment="Center" Margin="5,5,5,5" Grid.Row="0" Grid.Column="2" Text="Пароль"></TextBlock>
+            <PasswordBox Height="25" Name="TxtUserPassword" Margin="5,5,5,5" Grid.Row="0" Grid.Column="3" Password="masterkey"></PasswordBox>
+            <TextBlock VerticalAlignment="Center" Margin="5,5,5,5"  Grid.Row="1" Grid.Column="0" Text="Сервер"></TextBlock>
+            <TextBox Height="25" Name="TxtServerName" Margin="5,5,5,5" Grid.Row="1" Grid.Column="1">localhost</TextBox>
+            <TextBlock VerticalAlignment="Center" Margin="5,5,5,5" Grid.Row="1" Grid.Column="2" Text="База данных"></TextBlock>
+            <TextBox Height="25" Name="TxtDbName" Margin="5,5,5,5" Grid.Row="1" Grid.Column="3">d:/db/UPP20140127.FDB</TextBox>
+            <TextBlock VerticalAlignment="Center" Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" Text="Исходники"></TextBlock>
+            <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBox 
+                    VerticalAlignment="Center" Name="TxtFolders" Margin="5,0,0,0"
+                    Height="25">                
+                </TextBox>
+                <Button 
+                    Name="BtnSelectFolder"
+                    Grid.Column="1"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                    Margin="-1,0,0,0" Height="25" Click="BtnSelectFolder_OnClick"
+                        >...</Button>
+            </Grid>
+            <Button VerticalAlignment="Center" Margin="5,5,5,5" Grid.Row="2" Grid.Column="3" Height="25" Click="Button_Click">Поиск</Button>
         </Grid>
         <ListBox Grid.Row="1" Grid.Column="0" Name="LstDbObjects" 
                          Margin="5,5,5,5" ItemsSource="{Binding DbObjects}" SelectionChanged="LstDbObjects_SelectionChanged">

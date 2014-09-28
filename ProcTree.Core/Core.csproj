@@ -46,6 +46,7 @@
     <Compile Include="DbObjectRepository.cs" />
     <Compile Include="DbObjectUsageFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SourceFinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
