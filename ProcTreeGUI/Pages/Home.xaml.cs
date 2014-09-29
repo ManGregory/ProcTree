@@ -2,22 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ProcTree.Core;
 using Clipboard = System.Windows.Clipboard;
-using UserControl = System.Windows.Controls.UserControl;
 
 namespace ProcTreeGUI.Pages
 {
@@ -142,8 +133,10 @@ namespace ProcTreeGUI.Pages
                                     Source = d.Source,
                                     Type = d.Type
                                 }).ToList();
-                Clipboard.SetText(string.Join(Environment.NewLine,
-                    new ScriptCreator().CreateDropProcedureScript(unusedDbObjects)));
+                var scriptText = string.Join(Environment.NewLine,
+                    new ScriptCreator().CreateDropProcedureScript(unusedDbObjects));
+                Clipboard.SetText(scriptText);
+                NavigationCommands.GoToPage.Execute("/Pages/Script.xaml", this);
             }
         }
     }
