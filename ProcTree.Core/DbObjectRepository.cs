@@ -4,6 +4,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using FirebirdSql.Data.FirebirdClient;
+using FirebirdSql.Data.Isql;
 
 namespace ProcTree.Core
 {
@@ -68,6 +69,17 @@ namespace ProcTree.Core
                         Source = row["osource"].ToString().Trim().ToLower(CultureInfo.InvariantCulture),
                         Type = DbObject.GetDbObjectType(row["otype"].ToString().Trim())
                     }).ToList();
+            }
+        }
+
+        public void ExecuteScript(string scriptText)
+        {
+            using (var conn = GetConnection())
+            {
+                var fbScript = new FbScript(scriptText);
+                fbScript.Parse();
+                var batch = new FbBatchExecution(conn, fbScript);
+                batch.Execute(true);
             }
         }
 

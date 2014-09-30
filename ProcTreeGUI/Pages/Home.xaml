@@ -74,7 +74,15 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <avalonedit:TextEditor
+        <Border Grid.Row="1" Grid.Column="0" BorderThickness="0 0 1 0">
+            <Border.BorderBrush>
+                <LinearGradientBrush EndPoint="0.5,0.9" StartPoint="0.5,0">
+                    <GradientStop Color="#FFEBEFFA" Offset="0.9"/>
+                    <GradientStop Color="#FF226494"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+       </Border>
+            <avalonedit:TextEditor
             Grid.Row="1" Grid.Column="1"
             FontFamily="Consolas"
             FontSize="10pt"

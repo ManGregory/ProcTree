@@ -4,11 +4,23 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+             xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Style="{StaticResource ContentRoot}">
-        <ScrollViewer>
-            <TextBox Name="TxtScript"></TextBox>
-        </ScrollViewer>
+             d:DesignHeight="300" d:DesignWidth="300" Loaded="UserControl_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <avalonedit:TextEditor
+            Grid.Row="0" 
+            FontFamily="Consolas"
+            FontSize="10pt"
+            Name="TxtScript" Margin="5,5,5,5">
+        </avalonedit:TextEditor>
+        <TextBox Grid.Row="1" Height="100px" Name="TxtErrors" Margin="5,5,5,5"></TextBox>
+        <Button Grid.Row="2" Name="BtnExecuteScript" Margin="5,5,5,5" HorizontalAlignment="Right" Click="BtnExecuteScript_Click">Запустить</Button>
+
     </Grid>
 </UserControl>
