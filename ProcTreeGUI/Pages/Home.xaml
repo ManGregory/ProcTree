@@ -88,5 +88,14 @@
             FontSize="10pt"
             Name="TxtDbObjectSource" Margin="5,5,5,5" SyntaxHighlighting="C#"></avalonedit:TextEditor>
         <Button Name="BtnCreateScript" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Margin="5,5,5,5" Click="BtnCreateScript_Click">Создать скрипт</Button>
+        <Grid Grid.Row="1" Grid.Column="0" ColumnSpan="2" x:Name="Overlay" Panel.ZIndex="1000" Visibility="Collapsed" Margin="-40, 0, -15, 0">
+            <Grid.Background>
+                <SolidColorBrush Color="White" Opacity="1"/>
+            </Grid.Background>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" FontWeight="Bold">Идет поиск</TextBlock>                
+                <mui:ModernProgressRing Margin="20" IsActive="True" Width="60" Height="60" HorizontalAlignment="Center" VerticalAlignment="Center"></mui:ModernProgressRing>
+            </StackPanel>            
+        </Grid>
     </Grid>
 </UserControl>

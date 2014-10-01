@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,8 @@ namespace ProcTreeGUI.Pages
     /// </summary>
     public partial class Script
     {
+        private readonly BackgroundWorker _worker = new BackgroundWorker();
+
         public void SetScriptText(string text)
         {
             TxtScript.Text = text;
@@ -39,17 +42,37 @@ namespace ProcTreeGUI.Pages
             using (var reader = new XmlTextReader("avaloneditsql.xml"))
             {
                 TxtScript.SyntaxHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-            }            
+            }
+            _worker.DoWork += (sender, args) =>
+            {                
+                try
+                {
+                    ValueContainer.DbConnectionValues.Repository.ExecuteScript(args.Argument.ToString());
+                }
+                catch (Exception ex)
+                {
+                    Dispatcher.BeginInvoke((Action) delegate {
+                        TxtErrors.Text = ex.Message + Environment.NewLine;
+                    });
+                }                
+            };
+            _worker.RunWorkerCompleted += (sender, args) => SwitchOverlay(false);
+        }
+
+        private void SwitchOverlay(bool isVisible)
+        {
+            Overlay.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void BtnExecuteScript_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(TxtScript.Text))
+                if (!string.IsNullOrWhiteSpace(TxtScript.Text) && !_worker.IsBusy)
                 {
                     TxtErrors.Clear();
-                    ValueContainer.DbConnectionValues.Repository.ExecuteScript(TxtScript.Text);
+                    SwitchOverlay(true);
+                    _worker.RunWorkerAsync(TxtScript.Text);
                 }
             }
             catch (Exception ex)

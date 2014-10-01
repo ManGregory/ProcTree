@@ -29,12 +29,12 @@ namespace ProcTreeGUI.Pages
             {
                 TxtDbObjectSource.SyntaxHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
             }
-
+            
             _worker.DoWork += (sender, args) =>
             {
                 var arguments = args.Argument as object[];
                 if (arguments != null)
-                {
+                {                    
                     args.Result = GetUnusedDbObjects(arguments[0].ToString(), arguments[1].ToString(),
                         arguments[2].ToString(), arguments[3].ToString(), arguments[4] as IEnumerable<string>,
                         arguments[5] as IList<string>);
@@ -44,9 +44,10 @@ namespace ProcTreeGUI.Pages
             {
                 var unusedDbObjects = args.Result as List<CheckedDbObject>;
                 if (unusedDbObjects != null)
-                {
+                {                    
                     LstDbObjects.ItemsSource = unusedDbObjects;
-                    LstDbObjects.SelectedIndex = unusedDbObjects.Count > 0 ? 0 : -1;                   
+                    LstDbObjects.SelectedIndex = unusedDbObjects.Count > 0 ? 0 : -1;
+                    SwitchOverlay(false);
                 }
             };
         }        
@@ -62,6 +63,11 @@ namespace ProcTreeGUI.Pages
         {
             if (!_worker.IsBusy)
             {
+                if (LstDbObjects.ItemsSource != null)
+                {
+                    LstDbObjects.ItemsSource = null;
+                    TxtDbObjectSource.Clear();
+                }
                 var argument = new object[]
                 {
                     TxtUserName.Text, 
@@ -72,7 +78,13 @@ namespace ProcTreeGUI.Pages
                     new List<string>(new[] {".pas", ".dfm"})
                 };
                 _worker.RunWorkerAsync(argument);
+                SwitchOverlay(true);
             }
+        }
+
+        private void SwitchOverlay(bool isVisible)
+        {
+            Overlay.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private List<CheckedDbObject> GetUnusedDbObjects(string userName, string userPass, string dataSource, string dbName, IEnumerable<string> folders, IList<string> extensions)
