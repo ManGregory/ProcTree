@@ -41,12 +41,15 @@ namespace ProcTreeGUI.Pages
             };
             _worker.RunWorkerCompleted += (sender, args) =>
             {
-                var unusedDbObjects = args.Result as List<CheckedDbObject>;
-                if (unusedDbObjects != null)
-                {                    
-                    LstDbObjects.ItemsSource = unusedDbObjects;
-                    LstDbObjects.SelectedIndex = unusedDbObjects.Count > 0 ? 0 : -1;
-                    SwitchOverlay(false);
+                if (args.Result != null)
+                {
+                    var unusedDbObjects = args.Result as List<CheckedDbObject>;
+                    if (unusedDbObjects != null)
+                    {
+                        LstDbObjects.ItemsSource = unusedDbObjects;
+                        LstDbObjects.SelectedIndex = unusedDbObjects.Count > 0 ? 0 : -1;
+                        SwitchOverlay(false);
+                    }
                 }
             };
         }        
@@ -102,8 +105,6 @@ namespace ProcTreeGUI.Pages
                                 Type = d.Type,
                                 LinkedDbOjbects = d.LinkedDbOjbects
                             })
-                    .Where(d => d.Type == DbObjectType.Procedure)
-                    .OrderBy(d => d.Name)
                     .ToList();
             DbObjectRepository.MakeLinks(dbObjects);
             var unusedDbObjects = DbObjectRepository.GetUnusedDbObjects(dbObjects).ToList();
@@ -111,10 +112,13 @@ namespace ProcTreeGUI.Pages
                 folders,
                 extensions,
                 unusedDbObjects).ToList();
-           var usedInSource = objectUsages.Select(u => u.DbObject).GroupBy(d => d.Name).Select(gr => gr.First());
+            var usedInSource = objectUsages.Select(u => u.DbObject).GroupBy(d => d.Name).Select(gr => gr.First());
             unusedDbObjects = unusedDbObjects.Except(usedInSource).ToList();
             return
-                unusedDbObjects.Select(
+                unusedDbObjects
+                    .Where(d => d.Type == DbObjectType.Procedure)
+                    .OrderBy(d => d.Name)
+                    .Select(
                     d =>
                         new CheckedDbObject
                         {
