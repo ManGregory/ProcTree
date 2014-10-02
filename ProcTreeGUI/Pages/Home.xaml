@@ -39,23 +39,25 @@
             <TextBlock VerticalAlignment="Center" Margin="5,5,5,5" Grid.Row="1" Grid.Column="2" Text="База данных"></TextBlock>
             <TextBox Height="25" Name="TxtDbName" Margin="5,5,5,5" Grid.Row="1" Grid.Column="3">d:/db/UPP20140127.FDB</TextBox>
             <TextBlock VerticalAlignment="Center" Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" Text="Исходники"></TextBlock>
-            <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBox 
-                    VerticalAlignment="Center" Name="TxtFolders" Margin="5,0,0,0"
-                    Height="25">                
-                </TextBox>
-                <Button 
+            <DockPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" LastChildFill="True">
+                <Button Name="BtnSearch" VerticalAlignment="Center" Margin="5,5,5,5" Height="25" Click="Button_Click" HorizontalAlignment="Right" DockPanel.Dock="Right">Поиск</Button>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" DockPanel.Dock="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBox 
+                    VerticalAlignment="Center" Name="TxtFolders" Margin="5,0,0,0" 
+                    Height="25">
+                    </TextBox>
+                    <Button 
                     Name="BtnSelectFolder"
                     Grid.Column="1"
                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                     Margin="-1,0,0,0" Height="25" Click="BtnSelectFolder_OnClick"
                         >...</Button>
-            </Grid>
-            <Button Name="BtnSearch" VerticalAlignment="Center" Margin="5,5,5,5" Grid.Row="2" Grid.Column="3" Height="25" Click="Button_Click">Поиск</Button>
+                </Grid>                
+            </DockPanel>            
         </Grid>
         <ListBox Grid.Row="1" Grid.Column="0" Name="LstDbObjects" 
                          Margin="5,5,5,5" ItemsSource="{Binding DbObjects}" SelectionChanged="LstDbObjects_SelectionChanged">

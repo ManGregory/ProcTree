@@ -114,10 +114,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <Content Include="avaloneditsql.xml">
+    <None Include="AvalonEdit\SyntaxHighlighting\Pascal.xshd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
+    <None Include="packages.config" />
+    <None Include="AvalonEdit\SyntaxHighlighting\sql.xshd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProcTree.Core\Core.csproj">

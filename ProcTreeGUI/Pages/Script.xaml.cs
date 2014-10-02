@@ -22,10 +22,7 @@ namespace ProcTreeGUI.Pages
         public Script()
         {
             InitializeComponent();
-            using (var reader = new XmlTextReader("avaloneditsql.xml"))
-            {
-                TxtScript.SyntaxHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-            }
+            GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtScript);
             _worker.DoWork += (sender, args) =>
             {                
                 try

@@ -6,9 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Xml;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ProcTree.Core;
 using Clipboard = System.Windows.Clipboard;
 
@@ -24,11 +21,7 @@ namespace ProcTreeGUI.Pages
         public Home()
         {
             InitializeComponent();
-            using (var reader = new XmlTextReader("avaloneditsql.xml"))
-            {
-                TxtDbObjectSource.SyntaxHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-            }
-            
+            GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtDbObjectSource);
             _worker.DoWork += (sender, args) =>
             {
                 var arguments = args.Argument as object[];
