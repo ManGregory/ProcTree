@@ -1,9 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
-using System.Xml;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 
 namespace ProcTreeGUI.Pages
 {
