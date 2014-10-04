@@ -1,4 +1,5 @@
-﻿using ProcTree.Core;
+﻿using System.Collections.Generic;
+using ProcTree.Core;
 
 namespace ProcTreeGUI
 {
@@ -16,6 +17,7 @@ namespace ProcTreeGUI
         public static class ScriptValues
         {
             public static string Script { get; set; }
+            public static IList<DbObject> UnusedDbObjects { get; set; }
         }
     }
 }

@@ -1,6 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using ProcTree.Core;
+using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
 namespace ProcTreeGUI.Pages
 {
@@ -49,12 +55,29 @@ namespace ProcTreeGUI.Pages
                 {
                     TxtErrors.Clear();
                     SwitchOverlay(true);
+                    if (ChkSaveBackup.IsChecked == true)
+                    {
+                        ShowSaveBackupDialog();
+                    }
                     _worker.RunWorkerAsync(TxtScript.Text);
                 }
             }
             catch (Exception ex)
             {
                 TxtErrors.Text += ex.Message + Environment.NewLine;
+            }
+        }
+
+        private void ShowSaveBackupDialog()
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    var scriptToSave = string.Join(Environment.NewLine,
+                        new ScriptCreator().CreateAlterProcedureScript(ValueContainer.ScriptValues.UnusedDbObjects));
+                    File.WriteAllText(sfd.FileName, scriptToSave);
+                }
             }
         }
 

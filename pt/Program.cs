@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
+using FirebirdSql.Data.FirebirdClient;
 using ProcTree.Core;
 
 namespace pt
@@ -10,7 +12,7 @@ namespace pt
     {
         private static void Main(string[] args)
         {
-            if (args.Length < 5)
+            /*if (args.Length < 5)
             {
                 Console.WriteLine("Usage: pt <username> <password> <servername> <dbname> <<sourcedirs> ...>");
                 Console.ReadLine();
@@ -31,7 +33,14 @@ namespace pt
             foreach (var unusedDbObject in unusedDbObjects)
             {
                 Console.WriteLine(unusedDbObject);
-            }
+            }*/
+            var conn = new FbConnection(new FbConnectionStringBuilder
+            {
+                UserID = args[0],
+                Password = args[1],
+                DataSource = args[2],
+                Database = args[3]
+            }.ToString());
             Console.ReadLine();
         }
     }

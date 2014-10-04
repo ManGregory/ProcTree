@@ -138,7 +138,7 @@ namespace ProcTreeGUI.Pages
         {
             if (LstDbObjects.ItemsSource != null)
             {
-                IList<DbObject> unusedDbObjects =
+                ValueContainer.ScriptValues.UnusedDbObjects =
                     (LstDbObjects.ItemsSource as List<CheckedDbObject>).Where(d => d.IsChecked)
                         .Select(
                             d =>
@@ -150,7 +150,7 @@ namespace ProcTreeGUI.Pages
                                     Type = d.Type
                                 }).ToList();
                 var scriptText = string.Join(Environment.NewLine,
-                    new ScriptCreator().CreateDropProcedureScript(unusedDbObjects));
+                    new ScriptCreator().CreateDropProcedureScript(ValueContainer.ScriptValues.UnusedDbObjects));
                 Clipboard.SetText(scriptText);
                 ValueContainer.ScriptValues.Script = scriptText;
                 ValueContainer.DbConnectionValues.Repository = new DbObjectRepository(

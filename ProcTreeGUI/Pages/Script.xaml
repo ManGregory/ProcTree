@@ -20,6 +20,9 @@
             Name="TxtScript" Margin="5,5,5,5">
         </avalonedit:TextEditor>
         <TextBox Grid.Row="1" Height="100px" Name="TxtErrors" Margin="5,5,5,5"></TextBox>
+        <CheckBox IsChecked="True" Margin="5,5,5,5" Name="ChkSaveBackup" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left">
+            Сохранить бэкап
+        </CheckBox>
         <Button Grid.Row="2" Name="BtnExecuteScript" Margin="5,5,5,5" HorizontalAlignment="Right" Click="BtnExecuteScript_Click">Запустить</Button>
         <Grid Grid.Row="0" Grid.Column="0" x:Name="Overlay" Panel.ZIndex="1000" Visibility="Collapsed" Margin="-40, 0, -15, 0">
             <Grid.Background>
