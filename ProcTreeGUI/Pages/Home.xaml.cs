@@ -88,17 +88,13 @@ namespace ProcTreeGUI.Pages
                 userName, userPass, dataSource, dbName
             );
             var dbObjects =
-                (dbRepo as IDbObjectRepository).GetDbObjects()
-                    .Select(
-                        d =>
-                            new DbObject
-                            {
-                                Name = d.Name.ToLowerInvariant(),
-                                Source = d.Source,
-                                Type = d.Type,
-                                LinkedDbOjbects = d.LinkedDbOjbects
-                            })
-                    .ToList();
+                (dbRepo as IDbObjectRepository).GetDbObjects().ToList();
+            var dbObjectsUsages = dbObjects.Select(dbObject => new DbObjectUsage
+            {
+                DbObject = dbObject,
+                DbUsages = DbObjectRepository.GetDbObjectUsages(dbObject, dbObjects)
+            }).OrderBy(d => d.DbObject.Name).ToList();
+
             //var unusedDbObjects = DbObjectRepository.GetUnusedDbObjects(dbObjects).ToList();
             var objectUsages = SourceFinder.GetObjectUsages(
                 folders,

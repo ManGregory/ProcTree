@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="DbObject.cs" />
     <Compile Include="DbObjectRepository.cs" />
+    <Compile Include="DbObjectUsage.cs" />
     <Compile Include="DbObjectUsageFile.cs" />
     <Compile Include="IDbObjectRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

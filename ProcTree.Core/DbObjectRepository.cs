@@ -113,6 +113,11 @@ namespace ProcTree.Core
                 where !isUsed
                 select dbObj).ToList();
         }
+
+        public static IEnumerable<DbObject> GetDbObjectUsages(DbObject dbObject, IList<DbObject> dbObjects)
+        {
+            return (from d in dbObjects where d.LinkedDbOjbects.Contains(dbObject) select d);
+        }
     }
 
     public class DbObjectRepositoryDependencies : DbObjectRepository, IDbObjectRepository
