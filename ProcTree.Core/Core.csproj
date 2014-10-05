@@ -45,6 +45,7 @@
     <Compile Include="DbObject.cs" />
     <Compile Include="DbObjectRepository.cs" />
     <Compile Include="DbObjectUsageFile.cs" />
+    <Compile Include="IDbObjectRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptCreator.cs" />
     <Compile Include="SourceFinder.cs" />

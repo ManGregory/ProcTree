@@ -5,10 +5,20 @@ namespace ProcTree.Core
 {
     public enum DbObjectType
     {
-        None,
-        Procedure,
-        Trigger,
-        Table
+        Unknown = -1,
+        Table = 0,
+        View = 1,
+        Trigger = 2,
+        Computed = 3,
+        Validation = 4,
+        Procedure = 5,
+        ExpressionIndex = 6,
+        Exception = 7,
+        User = 8,
+        Field = 9,
+        Index = 10,
+        Generator = 14,
+        Udf = 15
     }
 
     public enum DbFirebirdBaseFieldType
@@ -69,13 +79,6 @@ namespace ProcTree.Core
 
     public class DbObject
     {
-        private static readonly Dictionary<string, DbObjectType> DbObjectTypesDictionary = new Dictionary<string, DbObjectType>
-        {
-            {"P", DbObjectType.Procedure},
-            {"T", DbObjectType.Trigger},
-            {"Table", DbObjectType.Table}
-        };
-
         public string Name { get; set; }
         public DbObjectType Type { get; set; }
         public string Source { get; set; }
@@ -84,13 +87,6 @@ namespace ProcTree.Core
         public DbObject()
         {
             LinkedDbOjbects = new List<DbObject>();
-        }
-
-        public static DbObjectType GetDbObjectType(string type)
-        {
-            return DbObjectTypesDictionary.ContainsKey(type)
-                ? DbObjectTypesDictionary[type]
-                : DbObjectType.None;
         }
 
         public override string ToString()

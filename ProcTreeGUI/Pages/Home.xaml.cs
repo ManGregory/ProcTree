@@ -84,11 +84,11 @@ namespace ProcTreeGUI.Pages
 
         private List<CheckedDbObject> GetUnusedDbObjects(string userName, string userPass, string dataSource, string dbName, IEnumerable<string> folders, IList<string> extensions)
         {
-            var dbRepo = new DbObjectRepository(
+            var dbRepo = new DbObjectRepositoryDependencies(
                 userName, userPass, dataSource, dbName
             );
             var dbObjects =
-                dbRepo.GetDbObjects()
+                (dbRepo as IDbObjectRepository).GetDbObjects()
                     .Select(
                         d =>
                             new DbObject
@@ -99,17 +99,15 @@ namespace ProcTreeGUI.Pages
                                 LinkedDbOjbects = d.LinkedDbOjbects
                             })
                     .ToList();
-            DbObjectRepository.MakeLinks(dbObjects);
-            var unusedDbObjects = DbObjectRepository.GetUnusedDbObjects(dbObjects).ToList();
+            //var unusedDbObjects = DbObjectRepository.GetUnusedDbObjects(dbObjects).ToList();
             var objectUsages = SourceFinder.GetObjectUsages(
                 folders,
                 extensions,
-                unusedDbObjects).ToList();
-            var usedInSource = objectUsages.Select(u => u.DbObject).GroupBy(d => d.Name).Select(gr => gr.First());
-            unusedDbObjects = unusedDbObjects.Except(usedInSource).ToList();
+                dbObjects).ToList();
+            /*var usedInSource = objectUsages.Select(u => u.DbObject).GroupBy(d => d.Name).Select(gr => gr.First());
+            dbObjects = unusedDbObjects.Except(usedInSource).ToList();*/
             return
-                unusedDbObjects
-                    .Where(d => d.Type == DbObjectType.Procedure)
+                dbObjects
                     .OrderBy(d => d.Name)
                     .Select(
                     d =>
