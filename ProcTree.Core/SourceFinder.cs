@@ -4,35 +4,43 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace ProcTree.Core
 {
-    public static class SourceFinder
+    public class SourceFinder
     {
-        public static IEnumerable<DbObjectUsageFile> GetObjectUsages(IEnumerable<string> baseDirs, IList<string> searchPatterns, IList<DbObject> objectsToFind)
+        private object _syncRoot = new object();
+        public List<DbObjectUsageFile> DbObjectUsageFiles { get; private set; }
+
+        public SourceFinder()
         {
-            var result = new List<DbObjectUsageFile>();
-            foreach (var baseDir in baseDirs)
-            {
-                result.AddRange(GetObjectUsage(baseDir, searchPatterns, objectsToFind));
-            }
-            return result;
+            DbObjectUsageFiles = new List<DbObjectUsageFile>();
         }
 
-        private static IEnumerable<DbObjectUsageFile> GetObjectUsage(string baseDir, IList<string> searchPatterns,
+        public SourceFinder(List<DbObjectUsageFile> dbObjectUsageFiles)
+        {
+            DbObjectUsageFiles = dbObjectUsageFiles;
+        }
+
+        public void FindObjectUsages(IEnumerable<string> baseDirs, IList<string> searchPatterns, IList<DbObject> objectsToFind)
+        {
+            foreach (var baseDir in baseDirs)
+            {
+                FindObjectUsage(baseDir, searchPatterns, objectsToFind);
+            }
+        }
+
+        private void FindObjectUsage(string baseDir, IList<string> searchPatterns,
             IList<DbObject> objectsToFind)
         {
-            var result = new List<DbObjectUsageFile>();
             var dirInfo = new DirectoryInfo(baseDir);
-            foreach (var file in dirInfo.GetFilesByPatterns(searchPatterns))
-            {
-                result.AddRange(ProcessFile(file.FullName, objectsToFind));
-            }
-            foreach (var dir in dirInfo.GetDirectories())
-            {
-                result.AddRange(GetObjectUsage(dir.FullName, searchPatterns, objectsToFind));
-            }
-            return result;
+            Parallel.ForEach(
+                dirInfo.GetFilesByPatterns(searchPatterns), info => ProcessFile(info.FullName, objectsToFind)
+            );
+            Parallel.ForEach(
+                dirInfo.GetDirectories(), info => FindObjectUsage(info.FullName, searchPatterns, objectsToFind)
+            );
         }
 
         private static string GetTextWithoutComments(string text)
@@ -52,24 +60,60 @@ namespace ProcTree.Core
                 RegexOptions.Singleline);            
         }
 
-        private static IEnumerable<DbObjectUsageFile> ProcessFile(string file, IList<DbObject> valuesToFind)
+        private void ProcessFile(string file, IList<DbObject> valuesToFind)
         {
-            var result = new List<DbObjectUsageFile>();
             if (File.Exists(file))
             {
                 var lines = GetTextWithoutComments(File.ReadAllText(file)).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
                 for (var lineNumber = 0; lineNumber < lines.Length; lineNumber++)
                 {
                     var line = lines[lineNumber].ToLower(CultureInfo.InvariantCulture);
-                    result.AddRange(from valueToFind in valuesToFind
-                        where line.Contains(valueToFind.Name)
-                        select new DbObjectUsageFile
+                    foreach (var valueToFind in valuesToFind)
+                    {
+                        if (line.Contains(valueToFind.Name))
                         {
-                            DbObject = valueToFind, LineNumber = lineNumber, PathToFile = file
-                        });
+                            var dbObjectUsageFile = DbObjectUsageFiles.FirstOrDefault(d => d.DbObject == valueToFind);
+                            if (dbObjectUsageFile != null)
+                            {
+                                var fileUsage = dbObjectUsageFile.FileUsages.FirstOrDefault(f => f.PathToFile == file);
+                                if (fileUsage != null)
+                                {
+                                    if (fileUsage.LineNumbers == null)
+                                    {
+                                        fileUsage.LineNumbers = new List<int>();
+                                    }
+                                    fileUsage.LineNumbers.Add(lineNumber);
+                                }
+                                else
+                                {
+                                    if (dbObjectUsageFile.FileUsages == null)
+                                    {
+                                        dbObjectUsageFile.FileUsages = new List<FileUsage>();
+                                    }
+                                    dbObjectUsageFile.FileUsages.Add(new FileUsage
+                                    {
+                                        PathToFile = file,
+                                        LineNumbers = new List<int> {lineNumber}
+                                    });
+                                }
+                            }
+                            else
+                            {
+
+                                DbObjectUsageFiles.Add(new DbObjectUsageFile
+                                {
+                                    DbObject = valueToFind,
+                                    FileUsages =
+                                        new List<FileUsage>
+                                        {
+                                            new FileUsage {PathToFile = file, LineNumbers = new List<int> {lineNumber}}
+                                        }
+                                });
+                            }
+                        }
+                    }
                 }
             }
-            return result;
         }
     }
 

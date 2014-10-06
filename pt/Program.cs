@@ -23,7 +23,7 @@ namespace pt
             var dbObjects = repo.GetDbObjects().OrderBy(d => d.Name).ToList();
             DbObjectRepository.MakeLinks(dbObjects);
             var unusedDbObjects = DbObjectRepository.GetUnusedDbObjects(dbObjects).ToList();
-            var objectUsages = SourceFinder.GetObjectUsages(
+            var objectUsages = SourceFinder.FindObjectUsages(
                 args.Skip(4).Take(args.Length - 4),
                 new List<string>(new[] {".pas", ".dfm"}),
                 unusedDbObjects).ToList();

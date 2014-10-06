@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,6 +9,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using ProcTree.Core;
 using Clipboard = System.Windows.Clipboard;
+using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
 namespace ProcTreeGUI.Pages
 {
@@ -36,16 +38,49 @@ namespace ProcTreeGUI.Pages
             {
                 if (args.Result != null)
                 {
-                    var unusedDbObjects = args.Result as List<CheckedDbObject>;
-                    if (unusedDbObjects != null)
+                    var dbObjectUsages = args.Result as List<DbObjectUsage>;
+                    if (dbObjectUsages != null)
                     {
-                        LstDbObjects.ItemsSource = unusedDbObjects;
-                        LstDbObjects.SelectedIndex = unusedDbObjects.Count > 0 ? 0 : -1;
+                        foreach (var dbObjectUsage in dbObjectUsages)
+                        {
+                            LstDbObjects.Items.Add(
+                                CreateUsageTreeItem(dbObjectUsage)
+                            );
+                        }
                         SwitchOverlay(false);
                     }
                 }
             };
-        }        
+        }
+
+        private TreeViewItem CreateUsageTreeItem(DbObjectUsage dbObjectUsage)
+        {
+            var item = new TreeViewItem();
+            item.Header = dbObjectUsage.DbObject.Name;
+            var procItem = CreateProcedureTreeItem(dbObjectUsage.DbUsages);
+            var sourceItem = CreateSourceTreeItem(dbObjectUsage.DbUsages);
+            item.Items.Add(procItem);
+            item.Items.Add(sourceItem);
+            return item;
+        }
+
+        private TreeViewItem CreateSourceTreeItem(IEnumerable<DbObject> dbUsages)
+        {
+            var item = new TreeViewItem();
+            var stackPanel = new StackPanel();
+            stackPanel.Children.Add(new TextBlock {Text = "Source files"});
+            item.Header = stackPanel;
+            return item;
+        }
+
+        private TreeViewItem CreateProcedureTreeItem(IEnumerable<DbObject> dbUsages)
+        {
+            var item = new TreeViewItem();
+            var stackPanel = new StackPanel();
+            stackPanel.Children.Add(new TextBlock { Text = "Procedures" });
+            item.Header = stackPanel;
+            return item;
+        }
 
         private void LstDbObjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -82,26 +117,24 @@ namespace ProcTreeGUI.Pages
             Overlay.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private List<CheckedDbObject> GetUnusedDbObjects(string userName, string userPass, string dataSource, string dbName, IEnumerable<string> folders, IList<string> extensions)
+        private List<DbObjectUsage> GetUnusedDbObjects(string userName, string userPass, string dataSource, string dbName, IEnumerable<string> folders, IList<string> extensions)
         {
             var dbRepo = new DbObjectRepositoryDependencies(
                 userName, userPass, dataSource, dbName
             );
             var dbObjects =
                 (dbRepo as IDbObjectRepository).GetDbObjects().ToList();
-            var dbObjectsUsages = dbObjects.Select(dbObject => new DbObjectUsage
+            var sourceFinder = new SourceFinder();
+            sourceFinder.FindObjectUsages(folders, extensions, dbObjects);
+            var dbObjectUsages = dbObjects.Select(dbObject => new DbObjectUsage
             {
                 DbObject = dbObject,
-                DbUsages = DbObjectRepository.GetDbObjectUsages(dbObject, dbObjects)
+                DbUsages = DbObjectRepository.GetDbObjectUsages(dbObject, dbObjects),
+                SourceFileUsages = sourceFinder.DbObjectUsageFiles.Where(d => d.DbObject == dbObject)
             }).OrderBy(d => d.DbObject.Name).ToList();
-
             //var unusedDbObjects = DbObjectRepository.GetUnusedDbObjects(dbObjects).ToList();
-            var objectUsages = SourceFinder.GetObjectUsages(
-                folders,
-                extensions,
-                dbObjects).ToList();
             /*var usedInSource = objectUsages.Select(u => u.DbObject).GroupBy(d => d.Name).Select(gr => gr.First());
-            dbObjects = unusedDbObjects.Except(usedInSource).ToList();*/
+            dbObjects = unusedDbObjects.Except(usedInSource).ToList();
             return
                 dbObjects
                     .OrderBy(d => d.Name)
@@ -114,7 +147,8 @@ namespace ProcTreeGUI.Pages
                             LinkedDbOjbects = d.LinkedDbOjbects,
                             Type = d.Type,
                             Source = d.Source
-                        }).ToList();
+                        }).ToList();*/
+            return dbObjectUsages;
         }
 
         private void BtnSelectFolder_OnClick(object sender, RoutedEventArgs e)

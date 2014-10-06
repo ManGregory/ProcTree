@@ -59,7 +59,7 @@
                 </Grid>                
             </DockPanel>            
         </Grid>
-        <ListBox Grid.Row="1" Grid.Column="0" Name="LstDbObjects" 
+       <!-- <ListBox Grid.Row="1" Grid.Column="0" Name="LstDbObjects" 
                          Margin="5,5,5,5" ItemsSource="{Binding DbObjects}" SelectionChanged="LstDbObjects_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="pages:CheckedDbObject">
@@ -74,7 +74,9 @@
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
-        </ListBox>
+        </ListBox> -->
+        <TreeView Grid.Row="1" Grid.Column="0" Name="LstDbObjects" Margin="5,5,5,5">
+        </TreeView>
         <Border Grid.Row="1" Grid.Column="0" BorderThickness="0 0 1 0">
             <Border.BorderBrush>
                 <LinearGradientBrush EndPoint="0.5,0.9" StartPoint="0.5,0">
