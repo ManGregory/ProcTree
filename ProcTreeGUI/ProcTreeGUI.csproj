@@ -30,6 +30,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>256.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FirebirdSql.Data.FirebirdClient, Version=4.5.1.0, Culture=neutral, PublicKeyToken=3750abcc3150b00c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -127,6 +130,21 @@
       <Project>{25afdb4d-0943-486f-98a3-3ba620453f16}</Project>
       <Name>Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="128.ico" />
+    <Content Include="16.ico" />
+    <Content Include="256.ico" />
+    <Content Include="32.ico" />
+    <Content Include="48.ico" />
+    <Content Include="64.ico" />
+    <Content Include="icons\128.ico" />
+    <Content Include="icons\16.ico" />
+    <Content Include="icons\256.ico" />
+    <Content Include="icons\32.ico" />
+    <Content Include="icons\48.ico" />
+    <Content Include="icons\64.ico" />
+    <Content Include="test.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
