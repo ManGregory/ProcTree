@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mui="http://firstfloorsoftware.com/ModernUI"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
-             xmlns:pages="clr-namespace:ProcTreeGUI.Pages"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">   
     <Grid>
@@ -89,7 +88,7 @@
             Grid.Row="1" Grid.Column="1"
             FontFamily="Consolas"
             FontSize="10pt"
-            Name="TxtDbObjectSource" Margin="5,5,5,5" SyntaxHighlighting="C#"></avalonedit:TextEditor>
+            Name="TxtDbObjectSource" Margin="5,5,5,5" SyntaxHighlighting="C#" ShowLineNumbers="True" LineNumbersForeground="CornflowerBlue"></avalonedit:TextEditor>
         <Button Name="BtnCreateScript" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Margin="5,5,5,5" Click="BtnCreateScript_Click">Создать скрипт</Button>
         <Grid Grid.Row="1" Grid.Column="0" ColumnSpan="2" x:Name="Overlay" Panel.ZIndex="1000" Visibility="Collapsed" Margin="-40, 0, -15, 0">
             <Grid.Background>

@@ -17,7 +17,8 @@
             Grid.Row="0" 
             FontFamily="Consolas"
             FontSize="10pt"
-            Name="TxtScript" Margin="5,5,5,5">
+            Name="TxtScript" Margin="5,5,5,5"
+            ShowLineNumbers="True" LineNumbersForeground="CornflowerBlue">
         </avalonedit:TextEditor>
         <TextBox Grid.Row="1" Height="100px" Name="TxtErrors" Margin="5,5,5,5"></TextBox>
         <CheckBox IsChecked="True" Margin="5,5,5,5" Name="ChkSaveBackup" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left">
