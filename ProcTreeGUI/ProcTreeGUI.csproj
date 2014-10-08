@@ -138,6 +138,7 @@
     <Content Include="icons\32.ico" />
     <Content Include="icons\48.ico" />
     <Content Include="icons\64.ico" />
+    <Content Include="icons\proctree.ico" />
     <Content Include="proctree.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
