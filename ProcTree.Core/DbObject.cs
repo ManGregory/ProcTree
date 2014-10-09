@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FirebirdSql.Data.Isql;
 
 namespace ProcTree.Core
 {

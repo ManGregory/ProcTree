@@ -1,10 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
-using Microsoft.Win32;
 using ProcTree.Core;
 using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 

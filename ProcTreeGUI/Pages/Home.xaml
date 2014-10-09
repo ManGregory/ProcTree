@@ -75,6 +75,17 @@
             </ListBox.ItemTemplate>
         </ListBox> -->
         <TreeView Grid.Row="1" Grid.Column="0" Name="LstDbObjects" Margin="5,5,5,5">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding DbUsages}">
+                    <TextBlock Foreground="Red" Text="{Binding DbObject.Name}"></TextBlock>
+                    <HierarchicalDataTemplate.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"></TextBlock>
+                        </DataTemplate>
+                    </HierarchicalDataTemplate.ItemTemplate>
+                    
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
         </TreeView>
         <Border Grid.Row="1" Grid.Column="0" BorderThickness="0 0 1 0">
             <Border.BorderBrush>

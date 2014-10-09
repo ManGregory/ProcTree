@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.IO;
-using System.Linq;
 using FirebirdSql.Data.FirebirdClient;
-using ProcTree.Core;
 
 namespace pt
 {

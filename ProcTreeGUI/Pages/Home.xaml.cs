@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using ICSharpCode.AvalonEdit.Editing;
 using ProcTree.Core;
 using Clipboard = System.Windows.Clipboard;
-using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
 namespace ProcTreeGUI.Pages
 {
@@ -43,12 +39,13 @@ namespace ProcTreeGUI.Pages
                     var dbObjectUsages = args.Result as List<DbObjectUsage>;
                     if (dbObjectUsages != null)
                     {
-                        foreach (var dbObjectUsage in dbObjectUsages)
+                        /*foreach (var dbObjectUsage in dbObjectUsages)
                         {
                             LstDbObjects.Items.Add(
                                 CreateUsageTreeItem(dbObjectUsage)
                             );
-                        }
+                        }*/
+                        LstDbObjects.ItemsSource = dbObjectUsages;
                         SwitchOverlay(false);
                     }
                 }
