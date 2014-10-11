@@ -185,6 +185,22 @@ namespace ProcTreeGUI.Pages
                 NavigationCommands.GoToPage.Execute("/Pages/Script.xaml", this);
             }
         }
+
+        private void LstDbObjects_OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            var dbObjectUsage = LstDbObjects.SelectedItem as DbObjectUsage;
+            if (dbObjectUsage != null)
+            {
+                TxtDbObjectSource.Text = dbObjectUsage.DbObject.Source;
+                return;
+            }
+            var dbObject = LstDbObjects.SelectedItem as DbObject;
+            if (dbObject != null)
+            {
+                TxtDbObjectSource.Text = dbObject.Source;
+                return;
+            }
+        }
     }
 
     public class CheckedDbObject : DbObject

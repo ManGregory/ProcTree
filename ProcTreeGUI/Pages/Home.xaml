@@ -5,8 +5,41 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mui="http://firstfloorsoftware.com/ModernUI"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:core="clr-namespace:ProcTree.Core;assembly=ProcTree.Core"
+             xmlns:viewModel="clr-namespace:ProcTreeGUI.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">   
+    <UserControl.Resources>
+        <viewModel:SimpleFolderConverter x:Key="folderConverter" />
+        
+        <HierarchicalDataTemplate DataType="{x:Type viewModel:FolderItem}"
+                              ItemsSource="{Binding Path=Items}">
+            <TextBlock Text="{Binding Path=Name}" />
+        </HierarchicalDataTemplate>
+
+        <HierarchicalDataTemplate DataType="{x:Type core:DbObjectUsageFile}">
+            <TextBlock Text="Исходники"></TextBlock>
+            <HierarchicalDataTemplate.ItemsSource>
+                <MultiBinding Converter="{StaticResource folderConverter}">
+                    <Binding Path="FileUsages"></Binding>
+                </MultiBinding>
+            </HierarchicalDataTemplate.ItemsSource>
+        </HierarchicalDataTemplate>
+        
+        <HierarchicalDataTemplate DataType="{x:Type core:FileUsage}" ItemsSource="{Binding LineNumbers}">
+            <TextBlock Text="{Binding PathToFile}"></TextBlock>
+        </HierarchicalDataTemplate>             
+                
+        <HierarchicalDataTemplate DataType="{x:Type core:DbObjectUsage}">
+            <TextBlock Text="{Binding Path=DbObject.Name}" />
+            <HierarchicalDataTemplate.ItemsSource>
+                <MultiBinding Converter="{StaticResource folderConverter}">
+                    <Binding Path="DbUsages"></Binding>
+                    <Binding Path="SourceFileUsages"></Binding>
+                </MultiBinding>
+            </HierarchicalDataTemplate.ItemsSource>
+        </HierarchicalDataTemplate>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300"></ColumnDefinition>
@@ -74,18 +107,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox> -->
-        <TreeView Grid.Row="1" Grid.Column="0" Name="LstDbObjects" Margin="5,5,5,5">
-            <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding DbUsages}">
-                    <TextBlock Foreground="Red" Text="{Binding DbObject.Name}"></TextBlock>
-                    <HierarchicalDataTemplate.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}"></TextBlock>
-                        </DataTemplate>
-                    </HierarchicalDataTemplate.ItemTemplate>
-                    
-                </HierarchicalDataTemplate>
-            </TreeView.ItemTemplate>
+        <TreeView Grid.Row="1" Grid.Column="0" Name="LstDbObjects" Margin="5,5,5,5" SelectedItemChanged="LstDbObjects_OnSelectedItemChanged">
         </TreeView>
         <Border Grid.Row="1" Grid.Column="0" BorderThickness="0 0 1 0">
             <Border.BorderBrush>

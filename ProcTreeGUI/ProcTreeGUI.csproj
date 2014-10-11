@@ -68,7 +68,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ViewModel\FolderItem.cs" />
     <Compile Include="GuiUtils.cs" />
+    <Compile Include="ViewModel\SimpleFolderConverter.cs" />
     <Compile Include="ValueContainer.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
