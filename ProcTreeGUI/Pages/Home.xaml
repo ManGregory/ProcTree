@@ -25,11 +25,19 @@
                 </MultiBinding>
             </HierarchicalDataTemplate.ItemsSource>
         </HierarchicalDataTemplate>
-        
+
         <HierarchicalDataTemplate DataType="{x:Type core:FileUsage}" ItemsSource="{Binding LineNumbers}">
             <TextBlock Text="{Binding PathToFile}"></TextBlock>
-        </HierarchicalDataTemplate>             
-                
+        </HierarchicalDataTemplate>
+
+        <HierarchicalDataTemplate DataType="{x:Type core:DbObjectView}">
+            <TextBlock Text="{Binding DbObject.Name}"></TextBlock>
+        </HierarchicalDataTemplate>
+
+        <HierarchicalDataTemplate DataType="{x:Type core:DbObject}">
+            <TextBlock Text="{Binding Name}"></TextBlock>
+        </HierarchicalDataTemplate>        
+        
         <HierarchicalDataTemplate DataType="{x:Type core:DbObjectUsage}">
             <TextBlock Text="{Binding Path=DbObject.Name}" />
             <HierarchicalDataTemplate.ItemsSource>

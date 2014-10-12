@@ -94,6 +94,16 @@ namespace ProcTree.Core
         }
     }
 
+    public class DbObjectCollection
+    {
+        public IEnumerable<DbObject> DbObjects { get; set; } 
+    }
+
+    public class DbObjectView
+    {
+        public DbObject DbObject { get; set; }
+    }
+
     public class DbProcedureParameter
     {
         public string Name { get; set; }

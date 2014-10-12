@@ -52,7 +52,7 @@ namespace ProcTreeGUI.Pages
             };
         }
 
-        private TreeViewItem CreateUsageTreeItem(DbObjectUsage dbObjectUsage)
+        /*private TreeViewItem CreateUsageTreeItem(DbObjectUsage dbObjectUsage)
         {
             var item = new TreeViewItem();
             item.Header = dbObjectUsage.DbObject.Name;
@@ -79,7 +79,7 @@ namespace ProcTreeGUI.Pages
             stackPanel.Children.Add(new TextBlock { Text = "Procedures" });
             item.Header = stackPanel;
             return item;
-        }
+        }*/
 
         private void LstDbObjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -128,7 +128,7 @@ namespace ProcTreeGUI.Pages
             var dbObjectUsages = dbObjects.Select(dbObject => new DbObjectUsage
             {
                 DbObject = dbObject,
-                DbUsages = DbObjectRepository.GetDbObjectUsages(dbObject, dbObjects),
+                DbUsages = DbObjectRepository.GetDbObjectUsages(dbObject, dbObjects).Select(d => new DbObjectView {DbObject = d}),
                 SourceFileUsages = sourceFinder.DbObjectUsageFiles.Where(d => d.DbObject == dbObject)
             }).OrderBy(d => d.DbObject.Name).ToList();
             //var unusedDbObjects = DbObjectRepository.GetUnusedDbObjects(dbObjects).ToList();
