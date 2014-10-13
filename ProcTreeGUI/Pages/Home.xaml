@@ -17,13 +17,8 @@
             <TextBlock Text="{Binding Path=Name}" />
         </HierarchicalDataTemplate>
 
-        <HierarchicalDataTemplate DataType="{x:Type core:DbObjectUsageFile}">
+        <HierarchicalDataTemplate DataType="{x:Type core:DbObjectUsageFile}" ItemsSource="{Binding FileUsages}">
             <TextBlock Text="Исходники"></TextBlock>
-            <HierarchicalDataTemplate.ItemsSource>
-                <MultiBinding Converter="{StaticResource folderConverter}">
-                    <Binding Path="FileUsages"></Binding>
-                </MultiBinding>
-            </HierarchicalDataTemplate.ItemsSource>
         </HierarchicalDataTemplate>
 
         <HierarchicalDataTemplate DataType="{x:Type core:FileUsage}" ItemsSource="{Binding LineNumbers}">
@@ -51,6 +46,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300"></ColumnDefinition>
+            <ColumnDefinition Width="2"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -58,7 +54,7 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid Grid.Row ="0" Grid.ColumnSpan="2">
+        <Grid Grid.Row ="0" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -117,16 +113,10 @@
         </ListBox> -->
         <TreeView Grid.Row="1" Grid.Column="0" Name="LstDbObjects" Margin="5,5,5,5" SelectedItemChanged="LstDbObjects_OnSelectedItemChanged">
         </TreeView>
-        <Border Grid.Row="1" Grid.Column="0" BorderThickness="0 0 1 0">
-            <Border.BorderBrush>
-                <LinearGradientBrush EndPoint="0.5,0.9" StartPoint="0.5,0">
-                    <GradientStop Color="#FFEBEFFA" Offset="0.9"/>
-                    <GradientStop Color="#FF226494"/>
-                </LinearGradientBrush>
-            </Border.BorderBrush>
-       </Border>
+        <GridSplitter Grid.Row="1" Grid.Column="1">
+        </GridSplitter>
             <avalonedit:TextEditor
-            Grid.Row="1" Grid.Column="1"
+            Grid.Row="1" Grid.Column="2"
             FontFamily="Consolas"
             FontSize="10pt"
             Name="TxtDbObjectSource" Margin="5,5,5,5" SyntaxHighlighting="C#" ShowLineNumbers="True" LineNumbersForeground="CornflowerBlue"></avalonedit:TextEditor>
