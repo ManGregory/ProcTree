@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using FirebirdSql.Data.FirebirdClient;
+using ProcTree.Core;
 
 namespace pt
 {
@@ -28,15 +30,16 @@ namespace pt
             foreach (var unusedDbObject in unusedDbObjects)
             {
                 Console.WriteLine(unusedDbObject);
-            }*/
+            }
             var conn = new FbConnection(new FbConnectionStringBuilder
             {
                 UserID = args[0],
                 Password = args[1],
                 DataSource = args[2],
                 Database = args[3]
-            }.ToString());
+            }.ToString());*/
+            File.WriteAllText("uMain2.pas", SourceFinder.GetTextWithoutComments(File.ReadAllText("uMain.pas")));
             Console.ReadLine();
-        }
+        }  
     }
 }

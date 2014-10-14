@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -21,7 +23,7 @@ namespace ProcTreeGUI.Pages
         public Home()
         {
             InitializeComponent();
-            GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtDbObjectSource);
+            GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtSource);
             _worker.DoWork += (sender, args) =>
             {
                 var arguments = args.Argument as object[];
@@ -85,7 +87,7 @@ namespace ProcTreeGUI.Pages
         {
             var dbObject = LstDbObjects.SelectedItem as DbObject;
             if (dbObject != null)
-                TxtDbObjectSource.Text = dbObject.Source;
+                TxtSource.Text = dbObject.Source;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -95,7 +97,7 @@ namespace ProcTreeGUI.Pages
                 if (LstDbObjects.ItemsSource != null)
                 {
                     LstDbObjects.ItemsSource = null;
-                    TxtDbObjectSource.Clear();
+                    TxtSource.Clear();
                 }
                 var argument = new object[]
                 {
@@ -128,7 +130,7 @@ namespace ProcTreeGUI.Pages
             var dbObjectUsages = dbObjects.Select(dbObject => new DbObjectUsage
             {
                 DbObject = dbObject,
-                DbUsages = DbObjectRepository.GetDbObjectUsages(dbObject, dbObjects).Select(d => new DbObjectView {DbObject = d}),
+                DbUsages = DbObjectRepository.GetDbObjectUsages(dbObject, dbObjects),
                 SourceFileUsages = sourceFinder.DbObjectUsageFiles.Where(d => d.DbObject == dbObject)
             }).OrderBy(d => d.DbObject.Name).ToList();
             //var unusedDbObjects = DbObjectRepository.GetUnusedDbObjects(dbObjects).ToList();
@@ -163,9 +165,14 @@ namespace ProcTreeGUI.Pages
 
         private void BtnCreateScript_Click(object sender, RoutedEventArgs e)
         {
+            //TxtSource.Encoding = Encoding.GetEncoding(1251);
+            //TxtSource.Text = System.IO.File.ReadAllText(@"D:\Work\Programs\BudgetRepo\BudgetTest\budget_main\uMain.pas");
+            /*TxtSource.Text = GuiUtils.GetString(
+                Encoding.Convert(Encoding.GetEncoding(1251), Encoding.UTF8, GuiUtils.GetBytes(System.IO.File.ReadAllText(@"D:\test\Project2.dpr", Encoding.GetEncoding(1251)))));*/
+            //TxtSource.Text = GuiUtils.GetString(Encoding.Convert(Encoding.GetEncoding(866), Encoding.UTF8, GuiUtils.GetBytes(System.IO.File.ReadAllText(@"D:\Work\Programs\BudgetRepo\BudgetTest\budget_main\uMain.pas"))));
             if (LstDbObjects.ItemsSource != null)
             {
-                ValueContainer.ScriptValues.UnusedDbObjects =
+                /*ValueContainer.ScriptValues.UnusedDbObjects =
                     (LstDbObjects.ItemsSource as List<CheckedDbObject>).Where(d => d.IsChecked)
                         .Select(
                             d =>
@@ -182,7 +189,7 @@ namespace ProcTreeGUI.Pages
                 ValueContainer.ScriptValues.Script = scriptText;
                 ValueContainer.DbConnectionValues.Repository = new DbObjectRepository(
                     TxtUserName.Text, TxtUserPassword.Password, TxtServerName.Text, TxtDbName.Text);
-                NavigationCommands.GoToPage.Execute("/Pages/Script.xaml", this);
+                NavigationCommands.GoToPage.Execute("/Pages/Script.xaml", this);*/
             }
         }
 
@@ -191,20 +198,43 @@ namespace ProcTreeGUI.Pages
             var dbObjectUsage = LstDbObjects.SelectedItem as DbObjectUsage;
             if (dbObjectUsage != null)
             {
-                TxtDbObjectSource.Text = dbObjectUsage.DbObject.Source;
+                TxtSource.Text = dbObjectUsage.DbObject.Source;
                 return;
             }
             var dbObject = LstDbObjects.SelectedItem as DbObject;
             if (dbObject != null)
             {
-                TxtDbObjectSource.Text = dbObject.Source;
+                TxtSource.Text = dbObject.Source;
                 return;
             }
+            var fileUsage = LstDbObjects.SelectedItem as FileUsage;
+            if (fileUsage != null)
+            {
+                LoadFileSource(fileUsage);
+                SelectSourceLine(fileUsage.LineNumbers.First().LineNumber);
+                return;
+            }
+            var fileUsageLine = LstDbObjects.SelectedItem as FileUsageLine;
+            if (fileUsageLine != null)
+            {                
+                LoadFileSource(fileUsageLine.FileUsage);
+                SelectSourceLine(fileUsageLine.LineNumber);
+            }
         }
-    }
 
-    public class CheckedDbObject : DbObject
-    {
-        public bool IsChecked { get; set; }
+        private void SelectSourceLine(int lineNumber)
+        {
+            TxtSource.ScrollToLine(lineNumber);
+            var line = TxtSource.Document.GetLineByNumber(lineNumber);
+            TxtSource.Select(line.Offset, line.Length);
+        }
+
+        private void LoadFileSource(FileUsage fileUsage)
+        {
+            GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Pascal, TxtSource);
+            TxtSource.Text =
+                GuiUtils.GetString(Encoding.Convert(Encoding.GetEncoding(1251), Encoding.UTF8,
+                    GuiUtils.GetBytes(System.IO.File.ReadAllText(fileUsage.PathToFile, Encoding.GetEncoding(1251)))));
+        }
     }
 }

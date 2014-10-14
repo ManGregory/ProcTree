@@ -43,12 +43,12 @@ namespace ProcTree.Core
             );
         }
 
-        private static string GetTextWithoutComments(string text)
+        public static string GetTextWithoutComments(string text)
         {
             const string blockComments = @"{(.*?)}";
             const string lineComments = @"//(.*?)\r?\n";
             const string strings = @"""((\\[^\n]|[^""\n])*)""";
-            const string verbatimStrings = @"@(""[^""]*"")+";            
+            const string verbatimStrings = @"@(""[^""]*"")+";
             return Regex.Replace(text,
                 blockComments + "|" + lineComments + "|" + strings + "|" + verbatimStrings,
                 me =>
@@ -64,7 +64,12 @@ namespace ProcTree.Core
         {
             if (File.Exists(file))
             {
-                var lines = GetTextWithoutComments(File.ReadAllText(file)).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                var text = File.ReadAllText(file);
+                if (Path.GetExtension(file) == ".pas")
+                {
+                    text = GetTextWithoutComments(text);
+                }
+                var lines = text.Split(new[] { "\r\n" }, StringSplitOptions.None);
                 for (var lineNumber = 0; lineNumber < lines.Length; lineNumber++)
                 {
                     var line = lines[lineNumber].ToLower(CultureInfo.InvariantCulture);
@@ -80,9 +85,8 @@ namespace ProcTree.Core
                                 {
                                     if (fileUsage.LineNumbers == null)
                                     {
-                                        fileUsage.LineNumbers = new List<int>();
-                                    }
-                                    fileUsage.LineNumbers.Add(lineNumber);
+                                        fileUsage.LineNumbers = new List<FileUsageLine>{new FileUsageLine{FileUsage = fileUsage, LineNumber = lineNumber + 1}};
+                                    }                                    
                                 }
                                 else
                                 {
@@ -90,24 +94,28 @@ namespace ProcTree.Core
                                     {
                                         dbObjectUsageFile.FileUsages = new List<FileUsage>();
                                     }
-                                    dbObjectUsageFile.FileUsages.Add(new FileUsage
+                                    fileUsage = new FileUsage
                                     {
-                                        PathToFile = file,
-                                        LineNumbers = new List<int> {lineNumber}
-                                    });
+                                        PathToFile = file
+                                    };
+                                    fileUsage.LineNumbers = new List<FileUsageLine>
+                                    {
+                                        new FileUsageLine {FileUsage = fileUsage, LineNumber = lineNumber + 1}
+                                    };
+                                    dbObjectUsageFile.FileUsages.Add(fileUsage);
                                 }
                             }
                             else
                             {
-
+                                var fileUsage = new FileUsage {PathToFile = file};
+                                fileUsage.LineNumbers = new List<FileUsageLine>
+                                {
+                                    new FileUsageLine {FileUsage = fileUsage, LineNumber = lineNumber + 1}
+                                };
                                 DbObjectUsageFiles.Add(new DbObjectUsageFile
                                 {
                                     DbObject = valueToFind,
-                                    FileUsages =
-                                        new List<FileUsage>
-                                        {
-                                            new FileUsage {PathToFile = file, LineNumbers = new List<int> {lineNumber}}
-                                        }
+                                    FileUsages = new List<FileUsage> { fileUsage }
                                 });
                             }
                         }

@@ -16,11 +16,22 @@ namespace ProcTree.Core
     public class FileUsage
     {
         public string PathToFile { get; set; }
-        public List<int> LineNumbers { get; set; }
+        public List<FileUsageLine> LineNumbers { get; set; }
 
         public override string ToString()
         {
             return string.Format("File: {0}, lines: {1}", PathToFile, string.Join(", ", LineNumbers));
+        }
+    }
+
+    public class FileUsageLine
+    {
+        public FileUsage FileUsage { get; set; }
+        public int LineNumber { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0}", LineNumber);
         }
     }
 }

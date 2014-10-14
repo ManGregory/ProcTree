@@ -210,6 +210,7 @@
       <Word>NATURAL</Word>
       <Word>RECORD</Word>
       <Word>SUBTYPE</Word>
+      <Word>SUSPEND</Word>
     </Keywords>
     <Rule color="Punctuation">
       [?,.;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
