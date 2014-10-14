@@ -198,12 +198,14 @@ namespace ProcTreeGUI.Pages
             var dbObjectUsage = LstDbObjects.SelectedItem as DbObjectUsage;
             if (dbObjectUsage != null)
             {
+                GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtSource);
                 TxtSource.Text = dbObjectUsage.DbObject.Source;
                 return;
             }
             var dbObject = LstDbObjects.SelectedItem as DbObject;
             if (dbObject != null)
             {
+                GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtSource);
                 TxtSource.Text = dbObject.Source;
                 return;
             }
