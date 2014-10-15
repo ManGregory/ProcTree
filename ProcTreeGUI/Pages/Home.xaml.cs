@@ -41,53 +41,13 @@ namespace ProcTreeGUI.Pages
                     var dbObjectUsages = args.Result as List<DbObjectUsage>;
                     if (dbObjectUsages != null)
                     {
-                        /*foreach (var dbObjectUsage in dbObjectUsages)
-                        {
-                            LstDbObjects.Items.Add(
-                                CreateUsageTreeItem(dbObjectUsage)
-                            );
-                        }*/
                         LstDbObjects.ItemsSource = dbObjectUsages;
+                        var firstItem = LstDbObjects.ItemContainerGenerator.ContainerFromIndex(0) as TreeViewItem;
+                        if (firstItem != null) firstItem.IsSelected = true;
                         SwitchOverlay(false);
                     }
                 }
             };
-        }
-
-        /*private TreeViewItem CreateUsageTreeItem(DbObjectUsage dbObjectUsage)
-        {
-            var item = new TreeViewItem();
-            item.Header = dbObjectUsage.DbObject.Name;
-            var procItem = CreateProcedureTreeItem(dbObjectUsage.DbUsages);
-            var sourceItem = CreateSourceTreeItem(dbObjectUsage.DbUsages);
-            item.Items.Add(procItem);
-            item.Items.Add(sourceItem);
-            return item;
-        }
-
-        private TreeViewItem CreateSourceTreeItem(IEnumerable<DbObject> dbUsages)
-        {
-            var item = new TreeViewItem();
-            var stackPanel = new StackPanel();
-            stackPanel.Children.Add(new TextBlock {Text = "Source files"});
-            item.Header = stackPanel;
-            return item;
-        }
-
-        private TreeViewItem CreateProcedureTreeItem(IEnumerable<DbObject> dbUsages)
-        {
-            var item = new TreeViewItem();
-            var stackPanel = new StackPanel();
-            stackPanel.Children.Add(new TextBlock { Text = "Procedures" });
-            item.Header = stackPanel;
-            return item;
-        }*/
-
-        private void LstDbObjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var dbObject = LstDbObjects.SelectedItem as DbObject;
-            if (dbObject != null)
-                TxtSource.Text = dbObject.Source;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -133,22 +93,6 @@ namespace ProcTreeGUI.Pages
                 DbUsages = DbObjectRepository.GetDbObjectUsages(dbObject, dbObjects),
                 SourceFileUsages = sourceFinder.DbObjectUsageFiles.Where(d => d.DbObject == dbObject)
             }).OrderBy(d => d.DbObject.Name).ToList();
-            //var unusedDbObjects = DbObjectRepository.GetUnusedDbObjects(dbObjects).ToList();
-            /*var usedInSource = objectUsages.Select(u => u.DbObject).GroupBy(d => d.Name).Select(gr => gr.First());
-            dbObjects = unusedDbObjects.Except(usedInSource).ToList();
-            return
-                dbObjects
-                    .OrderBy(d => d.Name)
-                    .Select(
-                    d =>
-                        new CheckedDbObject
-                        {
-                            IsChecked = true,
-                            Name = d.Name,
-                            LinkedDbOjbects = d.LinkedDbOjbects,
-                            Type = d.Type,
-                            Source = d.Source
-                        }).ToList();*/
             return dbObjectUsages;
         }
 
@@ -199,6 +143,7 @@ namespace ProcTreeGUI.Pages
             if (dbObjectUsage != null)
             {
                 GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtSource);
+                TxtSource.ScrollToHome();
                 TxtSource.Text = dbObjectUsage.DbObject.Source;
                 return;
             }
@@ -206,6 +151,7 @@ namespace ProcTreeGUI.Pages
             if (dbObject != null)
             {
                 GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtSource);
+                TxtSource.ScrollToHome();
                 TxtSource.Text = dbObject.Source;
                 return;
             }

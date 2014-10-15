@@ -63,7 +63,7 @@ namespace ProcTree.Core
                     }
                     return me.Value;
                 },
-                RegexOptions.Singleline);            
+                RegexOptions.Singleline);
         }
 
         private void ProcessFile(string file, IList<DbObject> valuesToFind)
