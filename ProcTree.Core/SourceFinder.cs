@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -47,14 +48,19 @@ namespace ProcTree.Core
         {
             const string blockComments = @"{(.*?)}";
             const string lineComments = @"//(.*?)\r?\n";
-            const string strings = @"""((\\[^\n]|[^""\n])*)""";
-            const string verbatimStrings = @"@(""[^""]*"")+";
+            const string strings = @"'((\\[^\n]|[^""\n])*)'";
+            const string verbatimStrings = @"@('[^""]*')+";
             return Regex.Replace(text,
                 blockComments + "|" + lineComments + "|" + strings + "|" + verbatimStrings,
                 me =>
                 {
-                    if (me.Value.StartsWith("{") || me.Value.StartsWith("//"))
-                        return me.Value.StartsWith("//") ? Environment.NewLine : "";
+                    if (me.Value.StartsWith("//"))
+                        return Environment.NewLine;
+                    if (me.Value.StartsWith("{"))
+                    {
+                        int count = me.Value.Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.RemoveEmptyEntries).Count() - 1;
+                        return string.Concat(Enumerable.Repeat(Environment.NewLine, count));
+                    }
                     return me.Value;
                 },
                 RegexOptions.Singleline);            
