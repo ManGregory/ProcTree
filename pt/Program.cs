@@ -38,7 +38,7 @@ namespace pt
                 DataSource = args[2],
                 Database = args[3]
             }.ToString());*/
-            File.WriteAllText("uMain2.pas", SourceFinder.GetTextWithoutComments(File.ReadAllText("uMain.pas")));
+            File.WriteAllText("uMain2.pas", SourceFinder.GetTextWithoutComments(File.ReadAllText("1.pas")));
             Console.ReadLine();
         }  
     }

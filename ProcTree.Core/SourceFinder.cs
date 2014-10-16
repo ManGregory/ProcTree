@@ -58,7 +58,7 @@ namespace ProcTree.Core
                         return Environment.NewLine;
                     if (me.Value.StartsWith("{"))
                     {
-                        int count = me.Value.Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.RemoveEmptyEntries).Count() - 1;
+                        int count = me.Value.Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.None).Count() - 1;
                         return string.Concat(Enumerable.Repeat(Environment.NewLine, count));
                     }
                     return me.Value;
