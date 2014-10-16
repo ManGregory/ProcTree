@@ -68,6 +68,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ViewModel\InverseBooleanConverter.cs" />
     <Compile Include="ViewModel\FolderItem.cs" />
     <Compile Include="GuiUtils.cs" />
     <Compile Include="ViewModel\SimpleFolderConverter.cs" />

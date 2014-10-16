@@ -87,12 +87,22 @@ namespace ProcTreeGUI.Pages
                 (dbRepo as IDbObjectRepository).GetDbObjects().ToList();
             var sourceFinder = new SourceFinder();
             sourceFinder.FindObjectUsages(folders, extensions, dbObjects);
-            var dbObjectUsages = dbObjects.Select(dbObject => new DbObjectUsage
-            {
-                DbObject = dbObject,
-                DbUsages = DbObjectRepository.GetDbObjectUsages(dbObject, dbObjects),
-                SourceFileUsages = sourceFinder.DbObjectUsageFiles.Where(d => d.DbObject == dbObject)
-            }).OrderBy(d => d.DbObject.Name).ToList();
+            var dbObjectUsages = dbObjects
+                .Where(d => d.Type == DbObjectType.Procedure)
+                .Select(dbObject => new DbObjectUsage
+                {
+                    DbObject = dbObject,
+                    DbUsages = DbObjectRepository.GetDbObjectUsages(dbObject, dbObjects),
+                    SourceFileUsages = sourceFinder.DbObjectUsageFiles.Where(d => d.DbObject == dbObject)
+                })
+                .OrderBy(d => d.DbObject.Name)
+                .Select(d => new DbObjectUsage
+                {
+                    DbObject = d.DbObject,
+                    DbUsages = d.DbUsages,
+                    SourceFileUsages = d.SourceFileUsages,
+                    IsUsed = d.DbUsages.Any() || d.SourceFileUsages.Any()
+                }).ToList();
             return dbObjectUsages;
         }
 
@@ -108,32 +118,22 @@ namespace ProcTreeGUI.Pages
         }
 
         private void BtnCreateScript_Click(object sender, RoutedEventArgs e)
-        {
-            //TxtSource.Encoding = Encoding.GetEncoding(1251);
-            //TxtSource.Text = System.IO.File.ReadAllText(@"D:\Work\Programs\BudgetRepo\BudgetTest\budget_main\uMain.pas");
-            /*TxtSource.Text = GuiUtils.GetString(
-                Encoding.Convert(Encoding.GetEncoding(1251), Encoding.UTF8, GuiUtils.GetBytes(System.IO.File.ReadAllText(@"D:\test\Project2.dpr", Encoding.GetEncoding(1251)))));*/
-            //TxtSource.Text = GuiUtils.GetString(Encoding.Convert(Encoding.GetEncoding(866), Encoding.UTF8, GuiUtils.GetBytes(System.IO.File.ReadAllText(@"D:\Work\Programs\BudgetRepo\BudgetTest\budget_main\uMain.pas"))));
+        {            
             if (LstDbObjects.ItemsSource != null)
             {
-                /*ValueContainer.ScriptValues.UnusedDbObjects =
-                    (LstDbObjects.ItemsSource as List<CheckedDbObject>).Where(d => d.IsChecked)
-                        .Select(
-                            d =>
-                                new DbObject
-                                {
-                                    LinkedDbOjbects = d.LinkedDbOjbects,
-                                    Name = d.Name,
-                                    Source = d.Source,
-                                    Type = d.Type
-                                }).ToList();
-                var scriptText = string.Join(Environment.NewLine,
-                    new ScriptCreator().CreateDropProcedureScript(ValueContainer.ScriptValues.UnusedDbObjects));
-                Clipboard.SetText(scriptText);
-                ValueContainer.ScriptValues.Script = scriptText;
-                ValueContainer.DbConnectionValues.Repository = new DbObjectRepository(
-                    TxtUserName.Text, TxtUserPassword.Password, TxtServerName.Text, TxtDbName.Text);
-                NavigationCommands.GoToPage.Execute("/Pages/Script.xaml", this);*/
+                var unusedDbObjects = LstDbObjects.ItemsSource as List<DbObjectUsage>;
+                if (unusedDbObjects != null)
+                {
+                    ValueContainer.ScriptValues.UnusedDbObjects =
+                        unusedDbObjects.Where(d => d.IsUsed == false).Select(d => d.DbObject).ToList();
+                    var scriptText = string.Join(Environment.NewLine,
+                        new ScriptCreator().CreateDropProcedureScript(ValueContainer.ScriptValues.UnusedDbObjects));
+                    Clipboard.SetText(scriptText);
+                    ValueContainer.ScriptValues.Script = scriptText;
+                    ValueContainer.DbConnectionValues.Repository = new DbObjectRepository(
+                        TxtUserName.Text, TxtUserPassword.Password, TxtServerName.Text, TxtDbName.Text);
+                    NavigationCommands.GoToPage.Execute("/Pages/Script.xaml", this);
+                }
             }
         }
 
