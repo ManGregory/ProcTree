@@ -17,7 +17,7 @@
                 <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Style="{StaticResource Heading1}">
                     <TextBlock>ProcTree</TextBlock><LineBreak />
                     <TextBlock Style="{StaticResource Heading2}" TextWrapping="Wrap">
-                        Программа для отображения мест использования объектов БД в исходном коде программы
+                        Программа для отображения мест использования объектов БД в исходном коде программы и хранимых процедурах
                     </TextBlock>                    
                 </TextBlock>
                 <TextBlock Grid.Row="2">           
