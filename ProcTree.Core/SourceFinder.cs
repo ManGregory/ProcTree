@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -36,11 +35,13 @@ namespace ProcTree.Core
             IList<DbObject> objectsToFind)
         {
             var dirInfo = new DirectoryInfo(baseDir);
+            const bool forceNonParallel = false;
+            var options = new ParallelOptions { MaxDegreeOfParallelism = forceNonParallel ? 1 : -1 };
             Parallel.ForEach(
-                dirInfo.GetFilesByPatterns(searchPatterns), info => ProcessFile(info.FullName, objectsToFind)
+                dirInfo.GetFilesByPatterns(searchPatterns), options, info => ProcessFile(info.FullName, objectsToFind)
             );
             Parallel.ForEach(
-                dirInfo.GetDirectories(), info => FindObjectUsage(info.FullName, searchPatterns, objectsToFind)
+                dirInfo.GetDirectories(), options, info => FindObjectUsage(info.FullName, searchPatterns, objectsToFind)
             );
         }
 
@@ -68,62 +69,78 @@ namespace ProcTree.Core
 
         private void ProcessFile(string file, IList<DbObject> valuesToFind)
         {
+            const string blockComments = @"{(.*?)}";
+            const string lineComments = @"//(.*?)\r?\n";
+            const string strings = @"'((\\[^\n]|[^""\n])*)'";
+            const string verbatimStrings = @"@('[^""]*')+";
             if (File.Exists(file))
             {
                 var text = File.ReadAllText(file);
-                if (Path.GetExtension(file) == ".pas")
-                {
-                    text = GetTextWithoutComments(text);
-                }
-                var lines = text.Split(new[] { "\r\n" }, StringSplitOptions.None);
-                for (var lineNumber = 0; lineNumber < lines.Length; lineNumber++)
-                {
-                    var line = lines[lineNumber].ToLower(CultureInfo.InvariantCulture);
-                    foreach (var valueToFind in valuesToFind)
+                var stringMatches = Regex.Matches(text,
+                    blockComments + "|" + lineComments + "|" + strings + "|" + verbatimStrings, RegexOptions.Singleline);
+                foreach (Match stringMatch in stringMatches)
+                {                    
+                    if (!(stringMatch.Value.StartsWith("//") || stringMatch.Value.StartsWith("{")))
                     {
-                        if (line.Contains(valueToFind.Name))
+                        var lines = stringMatch.Value.Split(new[] { "\r\n" }, StringSplitOptions.None);
+                        FindUsages(file, valuesToFind, lines, text.LineFromPos(stringMatch.Index));
+                    }
+                }
+            }
+        }
+
+        private void FindUsages(string file, IList<DbObject> valuesToFind, string[] lines, int beginLine)
+        {
+            for (var lineNumber = 0; lineNumber < lines.Length; lineNumber++)
+            {
+                var line = lines[lineNumber].ToLower(CultureInfo.InvariantCulture);
+                foreach (var valueToFind in valuesToFind)
+                {
+                    if (line.Contains(valueToFind.Name))
+                    {
+                        var dbObjectUsageFile = DbObjectUsageFiles.FirstOrDefault(d => d.DbObject == valueToFind);
+                        if (dbObjectUsageFile != null)
                         {
-                            var dbObjectUsageFile = DbObjectUsageFiles.FirstOrDefault(d => d.DbObject == valueToFind);
-                            if (dbObjectUsageFile != null)
+                            var fileUsage = dbObjectUsageFile.FileUsages.FirstOrDefault(f => f.PathToFile == file);
+                            if (fileUsage != null)
                             {
-                                var fileUsage = dbObjectUsageFile.FileUsages.FirstOrDefault(f => f.PathToFile == file);
-                                if (fileUsage != null)
+                                if (fileUsage.LineNumbers == null)
                                 {
-                                    if (fileUsage.LineNumbers == null)
-                                    {
-                                        fileUsage.LineNumbers = new List<FileUsageLine>{new FileUsageLine{FileUsage = fileUsage, LineNumber = lineNumber + 1}};
-                                    }                                    
-                                }
-                                else
-                                {
-                                    if (dbObjectUsageFile.FileUsages == null)
-                                    {
-                                        dbObjectUsageFile.FileUsages = new List<FileUsage>();
-                                    }
-                                    fileUsage = new FileUsage
-                                    {
-                                        PathToFile = file
-                                    };
                                     fileUsage.LineNumbers = new List<FileUsageLine>
                                     {
-                                        new FileUsageLine {FileUsage = fileUsage, LineNumber = lineNumber + 1}
+                                        new FileUsageLine {FileUsage = fileUsage, LineNumber = beginLine + lineNumber}
                                     };
-                                    dbObjectUsageFile.FileUsages.Add(fileUsage);
                                 }
                             }
                             else
                             {
-                                var fileUsage = new FileUsage {PathToFile = file};
+                                if (dbObjectUsageFile.FileUsages == null)
+                                {
+                                    dbObjectUsageFile.FileUsages = new List<FileUsage>();
+                                }
+                                fileUsage = new FileUsage
+                                {
+                                    PathToFile = file
+                                };
                                 fileUsage.LineNumbers = new List<FileUsageLine>
                                 {
-                                    new FileUsageLine {FileUsage = fileUsage, LineNumber = lineNumber + 1}
+                                    new FileUsageLine {FileUsage = fileUsage, LineNumber = beginLine + lineNumber}
                                 };
-                                DbObjectUsageFiles.Add(new DbObjectUsageFile
-                                {
-                                    DbObject = valueToFind,
-                                    FileUsages = new List<FileUsage> { fileUsage }
-                                });
+                                dbObjectUsageFile.FileUsages.Add(fileUsage);
                             }
+                        }
+                        else
+                        {
+                            var fileUsage = new FileUsage {PathToFile = file};
+                            fileUsage.LineNumbers = new List<FileUsageLine>
+                            {
+                                new FileUsageLine {FileUsage = fileUsage, LineNumber = beginLine + lineNumber}
+                            };
+                            DbObjectUsageFiles.Add(new DbObjectUsageFile
+                            {
+                                DbObject = valueToFind,
+                                FileUsages = new List<FileUsage> {fileUsage}
+                            });
                         }
                     }
                 }
@@ -139,6 +156,17 @@ namespace ProcTree.Core
                 throw new ArgumentNullException("searchPatterns");
             var files = dir.EnumerateFiles();
             return files.Where(f => searchPatterns.Contains(f.Extension));
+        }
+    }
+
+    public static class StringExt
+    {
+        public static int LineFromPos(this String s, int pos)
+        {
+            int res = 1;
+            for (int i = 0; i <= pos - 1; i++)
+                if (s[i] == '\n') res++;
+            return res;
         }
     }
 }
