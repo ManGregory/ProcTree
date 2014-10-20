@@ -94,9 +94,10 @@ namespace ProcTree.Core
             for (var lineNumber = 0; lineNumber < lines.Length; lineNumber++)
             {
                 var line = lines[lineNumber].ToLower(CultureInfo.InvariantCulture);
+                var words = line.Words();
                 foreach (var valueToFind in valuesToFind)
                 {
-                    if (line.Contains(valueToFind.Name))
+                    if (words.Contains(valueToFind.Name))
                     {
                         var dbObjectUsageFile = DbObjectUsageFiles.FirstOrDefault(d => d.DbObject == valueToFind);
                         if (dbObjectUsageFile != null)
@@ -167,6 +168,17 @@ namespace ProcTree.Core
             for (int i = 0; i <= pos - 1; i++)
                 if (s[i] == '\n') res++;
             return res;
+        }
+
+        public static string[] Words(this string s)
+        {
+            //
+            // Split on all non-word characters.
+            // ... Returns an array of all the words.
+            //
+            return s.Split(new[] { '*', ' ', ';', '(', ')', '%', '[', ']', '=', '/', '+', '-' }, StringSplitOptions.RemoveEmptyEntries);
+            // @      special verbatim string syntax
+            // \W+    one or more non-word characters together
         }
     }
 }
