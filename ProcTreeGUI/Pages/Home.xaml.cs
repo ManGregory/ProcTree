@@ -146,12 +146,20 @@ namespace ProcTreeGUI.Pages
                 TxtSource.Text = dbObjectUsage.DbObject.Source;
                 return;
             }
-            var dbObject = LstDbObjects.SelectedItem as DbObject;
+            var dbObject = LstDbObjects.SelectedItem as DbObjectUsageProcedure;
             if (dbObject != null)
             {
                 GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtSource);
-                TxtSource.ScrollToHome();
-                TxtSource.Text = dbObject.Source;
+                TxtSource.Text = dbObject.DbObject.Source;
+                SelectSourceLine(dbObject.LineNumbers.First().LineNumber);
+                return;
+            }
+            var procUsageLine = LstDbObjects.SelectedItem as ProcedureUsageLine;
+            if (procUsageLine != null)
+            {
+                GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtSource);
+                TxtSource.Text = procUsageLine.DbObjectUsageProcedure.DbObject.Source;
+                SelectSourceLine(procUsageLine.LineNumber);
                 return;
             }
             var fileUsage = LstDbObjects.SelectedItem as FileUsage;

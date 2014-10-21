@@ -18,6 +18,14 @@
             <TextBlock Text="{Binding Path=Name}" />
         </HierarchicalDataTemplate>
 
+        <HierarchicalDataTemplate DataType="{x:Type core:DbObjectUsageProcedure}" ItemsSource="{Binding LineNumbers}">
+            <TextBlock Text="{Binding Path=DbObject.Name}"></TextBlock>
+        </HierarchicalDataTemplate>        
+        
+        <HierarchicalDataTemplate DataType="{x:Type core:ProcedureUsageLine}">
+            <TextBlock Text="{Binding LineNumber}"></TextBlock>
+        </HierarchicalDataTemplate>
+        
         <HierarchicalDataTemplate DataType="{x:Type core:DbObjectUsageFile}" ItemsSource="{Binding FileUsages}">
             <TextBlock Text="Исходники"></TextBlock>
         </HierarchicalDataTemplate>

@@ -114,9 +114,38 @@ namespace ProcTree.Core
                 select dbObj).ToList();
         }
 
-        public static IEnumerable<DbObject> GetDbObjectUsages(DbObject dbObject, IList<DbObject> dbObjects)
+        public static IEnumerable<DbObjectUsageProcedure> GetDbObjectUsages(DbObject dbObject, IList<DbObject> dbObjects)
         {
-            return (from d in dbObjects where d.LinkedDbOjbects.Contains(dbObject) select d);
+            var dbObjectUsages = new List<DbObjectUsageProcedure>();
+            foreach (var d in dbObjects)
+            {
+                if (d.LinkedDbOjbects.Contains(dbObject))
+                {
+                    var dbObjectProc = new DbObjectUsageProcedure
+                    {
+                        DbObject = d
+                    };
+                    dbObjectProc.LineNumbers =
+                        GetWordUsages(dbObject.Name, d.Source)
+                            .Select(l => new ProcedureUsageLine {DbObjectUsageProcedure = dbObjectProc, LineNumber = l});
+                    dbObjectUsages.Add(dbObjectProc);
+                }
+            }
+            return dbObjectUsages;
+        }
+
+        private static IEnumerable<int> GetWordUsages(string name, string source)
+        {
+            var lineNumbers = new List<int>();
+            var lines = source.Split(new[] {"\r\n"}, StringSplitOptions.None);
+            for (var lineNum = 0; lineNum < lines.Count(); lineNum++)
+            {
+                if (lines[lineNum].Words().Contains(name))
+                {
+                    lineNumbers.Add(lineNum + 1);
+                }
+            }
+            return lineNumbers;
         }
     }
 
