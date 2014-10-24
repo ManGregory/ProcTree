@@ -10,6 +10,7 @@
             <mui:LinkGroup.Links>
                 <mui:Link DisplayName="Поиск" Source="/Pages/Home.xaml" />
                 <mui:Link DisplayName="Скрипт" Source="/Pages/Script.xaml"></mui:Link>
+                <mui:Link DisplayName="SQL ⇆ Код" Source="/Pages/SqlToCode.xaml"></mui:Link>
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Настройки" GroupKey="settings">

@@ -176,7 +176,7 @@ namespace ProcTree.Core
             // Split on all non-word characters.
             // ... Returns an array of all the words.
             //
-            return s.Split(new[] { '*', ' ', ';', '(', ')', '%', '[', ']', '=', '/', '+', '-' }, StringSplitOptions.RemoveEmptyEntries);
+            return s.Split(new[] { '*', ' ', ';', '(', ')', '%', '[', ']', '=', '/', '+', '-', ',' }, StringSplitOptions.RemoveEmptyEntries);
             // @      special verbatim string syntax
             // \W+    one or more non-word characters together
         }

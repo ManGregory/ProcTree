@@ -79,50 +79,26 @@
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
             <TextBlock VerticalAlignment="Center" Margin="5,5,5,5"  Grid.Row="1" Grid.Column="0" Text="Имя пользователя"></TextBlock>
-            <TextBox Height="25" Name="TxtUserName" Margin="5,5,5,5" Grid.Row="1" Grid.Column="1">SYSDBA</TextBox>
+            <TextBox Height="25" Name="TxtUserName" Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" TabIndex="2">SYSDBA</TextBox>
             <TextBlock VerticalAlignment="Center" Margin="5,5,5,5" Grid.Row="1" Grid.Column="2" Text="Пароль"></TextBlock>
-            <PasswordBox Height="25" Name="TxtUserPassword" Margin="5,5,5,5" Grid.Row="1" Grid.Column="3" Password="masterkey"></PasswordBox>
+            <PasswordBox Height="25" Name="TxtUserPassword" Margin="5,5,5,5" Grid.Row="1" Grid.Column="3" Password="masterkey" TabIndex="3"></PasswordBox>
             <TextBlock VerticalAlignment="Center" Margin="5,5,5,5"  Grid.Row="0" Grid.Column="0" Text="Сервер"></TextBlock>
-            <TextBox Height="25" Name="TxtServerName" Margin="5,5,5,5" Grid.Row="0" Grid.Column="1">localhost</TextBox>
+            <TextBox Height="25" Name="TxtServerName" Margin="5,5,5,5" Grid.Row="0" Grid.Column="1" TabIndex="0">localhost</TextBox>
             <TextBlock VerticalAlignment="Center" Margin="5,5,5,5" Grid.Row="0" Grid.Column="2" Text="База данных"></TextBlock>
-            <TextBox Height="25" Name="TxtDbName" Margin="5,5,5,5" Grid.Row="0" Grid.Column="3">d:/db/UPP20140127.FDB</TextBox>
+            <TextBox Height="25" Name="TxtDbName" Margin="5,5,5,5" Grid.Row="0" Grid.Column="3" TabIndex="1">d:/db/UPP20140127.FDB</TextBox>
             <TextBlock VerticalAlignment="Center" Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" Text="Исходники"></TextBlock>
             <DockPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" LastChildFill="True">
-                <Button Name="BtnSearch" VerticalAlignment="Center" Margin="5,5,5,5" Height="25" Click="Button_Click" HorizontalAlignment="Right" DockPanel.Dock="Right">Поиск</Button>
+                <Button Name="BtnSearch" VerticalAlignment="Center" Margin="5,5,5,5" Height="25" Click="Button_Click" HorizontalAlignment="Right" DockPanel.Dock="Right" TabIndex="6">Поиск</Button>
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" DockPanel.Dock="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBox 
-                    VerticalAlignment="Center" Name="TxtFolders" Margin="5,0,0,0" 
-                    Height="25">
-                    </TextBox>
-                    <Button 
-                    Name="BtnSelectFolder"
-                    Grid.Column="1"
-                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                    Margin="-1,0,0,0" Height="25" Click="BtnSelectFolder_OnClick"
-                        >...</Button>
+                    <TextBox VerticalAlignment="Center" Name="TxtFolders" Margin="5,0,0,0" Height="25" TabIndex="4"></TextBox>
+                    <Button Name="BtnSelectFolder" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="-1,0,0,0" Height="25" Click="BtnSelectFolder_OnClick" TabIndex="5">...</Button>
                 </Grid>                
             </DockPanel>            
         </Grid>
-       <!-- <ListBox Grid.Row="1" Grid.Column="0" Name="LstDbObjects" 
-                         Margin="5,5,5,5" ItemsSource="{Binding DbObjects}" SelectionChanged="LstDbObjects_SelectionChanged">
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="pages:CheckedDbObject">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Column="0" Margin="6" IsChecked="{Binding IsChecked}"></CheckBox>
-                        <TextBlock Grid.Column="1" Margin="6" Text="{Binding Name}" FontSize="11pt"/>
-                        
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox> -->
         <TreeView Grid.Row="1" Grid.Column="0" Name="LstDbObjects" Margin="5,5,5,5" SelectedItemChanged="LstDbObjects_OnSelectedItemChanged">
         </TreeView>
         <GridSplitter Grid.Row="1" Grid.Column="1">

@@ -68,6 +68,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Pages\SqlToCode.xaml.cs">
+      <DependentUpon>SqlToCode.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\InverseBooleanConverter.cs" />
     <Compile Include="ViewModel\FolderItem.cs" />
     <Compile Include="GuiUtils.cs" />
@@ -118,6 +121,10 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Page Include="Pages\SqlToCode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="AvalonEdit\SyntaxHighlighting\Pascal.xshd">

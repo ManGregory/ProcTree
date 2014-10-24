@@ -163,6 +163,9 @@
       <Word>INTO</Word>
       <Word>PACKAGE</Word>
       <Word>SELECT</Word>
+      <Word>LEFT</Word>
+      <Word>RIGHT</Word>
+      <Word>JOIN</Word>
       <Word>VARCHAR</Word>
       <Word>IS</Word>
       <Word>PARTITION</Word>
