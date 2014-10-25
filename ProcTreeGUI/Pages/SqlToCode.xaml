@@ -4,8 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:viewModel="clr-namespace:ProcTreeGUI.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <viewModel:DirectionToCodeConverter x:Key="directionToCodeConverter" />
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -16,10 +20,9 @@
             FontFamily="Consolas"
             FontSize="10pt"
             Name="TxtSource" Margin="5,5,5,5"
-            ShowLineNumbers="True" LineNumbersForeground="CornflowerBlue">
+            ShowLineNumbers="True" LineNumbersForeground="CornflowerBlue" TextChanged="TxtSource_OnTextChanged">
         </avalonedit:TextEditor>
-        <Button Grid.Row="1" HorizontalAlignment="Right" Margin="5,5,5,5" Name="BtnConvert" Click="BtnConvert_OnClick">
-            SQL ⇆ Код
+        <Button Grid.Row="1" HorizontalAlignment="Right" Margin="5,5,5,5" Name="BtnConvert" Click="BtnConvert_OnClick" Content="{Binding ConversionDirection, Converter={StaticResource directionToCodeConverter}}">            
         </Button>
     </Grid>
 </UserControl>

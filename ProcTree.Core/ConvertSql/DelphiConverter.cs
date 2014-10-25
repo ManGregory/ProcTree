@@ -21,9 +21,23 @@ namespace ProcTree.Core.ConvertSql
                 {"'", "''"}
             };
 
+        private static readonly Dictionary<string, string> UnescapeCharacters = new Dictionary<string, string>
+            {
+                {"''", "'"},
+                {"'", ""},
+                {"+", ""},
+                {";", ""}
+            };
+
         private string EscapeText(string text)
         {
             return EscapeCharacters.Keys.Aggregate(text, (current, escChar) => current.Replace(escChar, EscapeCharacters[escChar]));
+        }
+
+        private string UnescapeText(string text)
+        {
+            return UnescapeCharacters.Keys.Aggregate(text,
+                (current, escChar) => current.Replace(escChar, UnescapeCharacters[escChar]));
         }
 
         public DelphiConverter(int beginMarginCount, string beginMarginSymbol)
@@ -32,20 +46,29 @@ namespace ProcTree.Core.ConvertSql
             BeginMarginSymbol = beginMarginSymbol;
         }
 
+        private string Convert(string sqlText, SqlConversionDirection direction)
+        {
+            var builder = new StringBuilder();
+            var lines = sqlText.Split(new[] { LineSeparator }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var line in lines)
+            {
+                var procLine = direction == SqlConversionDirection.CodeToSql
+                    ? CreateBeginMargin() + OpenQuote + EscapeText(line) + ' ' + CloseQuote + ConcatenationSymbol +
+                      Environment.NewLine
+                    : UnescapeText(line) + Environment.NewLine;
+                builder.Append(procLine);
+            }
+            return builder.ToString();            
+        }
+
         public string ConvertToProgrammingLanguage(string sqlText)
         {
             if (sqlText == null)
             {
                 throw new ArgumentNullException("sqlText");
             }
-            var builder = new StringBuilder();
-            var lines = sqlText.Split(new string[] {LineSeparator}, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var line in lines)
-            {
-                builder.Append(CreateBeginMargin() + OpenQuote + EscapeText(line) + ' ' + CloseQuote + ConcatenationSymbol + Environment.NewLine);
-            }
-            var result = builder.ToString();
-            return result.Remove(result.Length - 5, 5) + TerminationSymbol;
+            var result = Convert(sqlText, SqlConversionDirection.CodeToSql); 
+            return result.Length > 5 ? result.Remove(result.Length - 5, 5) + TerminationSymbol : result;
         }
 
         private string CreateBeginMargin()
@@ -53,9 +76,21 @@ namespace ProcTree.Core.ConvertSql
             return String.Concat(Enumerable.Repeat(BeginMarginSymbol, BeginMarginCount));
         }
 
-        public string ConvertFromProgrammingLangeuage(string sqlText)
+        public string ConvertFromProgrammingLanguage(string sqlText)
         {
-            throw new NotImplementedException();
+            if (sqlText == null)
+            {
+                throw new ArgumentNullException("sqlText");
+            }
+            var result = Convert(sqlText, SqlConversionDirection.SqlToCode);
+            return result.TrimEnd();
+        }
+
+        public SqlConversionDirection GetSqlConversionDirection(string sqlText)
+        {
+            return sqlText.Trim().StartsWith(OpenQuote)
+                ? SqlConversionDirection.CodeToSql
+                : SqlConversionDirection.SqlToCode;
         }
     }
 }

@@ -71,6 +71,8 @@
     <Compile Include="Pages\SqlToCode.xaml.cs">
       <DependentUpon>SqlToCode.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModel\DirectionToCodeConverter.cs" />
     <Compile Include="ViewModel\InverseBooleanConverter.cs" />
     <Compile Include="ViewModel\FolderItem.cs" />
     <Compile Include="GuiUtils.cs" />
