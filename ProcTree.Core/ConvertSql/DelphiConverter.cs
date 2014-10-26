@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ProcTree.Core.ConvertSql
 {
@@ -23,10 +25,9 @@ namespace ProcTree.Core.ConvertSql
 
         private static readonly Dictionary<string, string> UnescapeCharacters = new Dictionary<string, string>
             {
-                {"''", "'"},
+                {"''", "\""},
                 {"'", ""},
-                {"+", ""},
-                {";", ""}
+                {"\"", "'"},
             };
 
         private string EscapeText(string text)
@@ -36,8 +37,15 @@ namespace ProcTree.Core.ConvertSql
 
         private string UnescapeText(string text)
         {
-            return UnescapeCharacters.Keys.Aggregate(text,
-                (current, escChar) => current.Replace(escChar, UnescapeCharacters[escChar]));
+            const string strings = @"'((\\[^\n]|[^""\n])*)'";
+            var stringMatches = Regex.Matches(text, strings, RegexOptions.Singleline);
+            var result = new StringBuilder();
+            foreach (Match stringMatch in stringMatches)
+            {
+                result.Append(UnescapeCharacters.Aggregate(stringMatch.Value,
+                    (current, pair) => current.Replace(pair.Key, pair.Value)));
+            }
+            return result.ToString();
         }
 
         public DelphiConverter(int beginMarginCount, string beginMarginSymbol)
