@@ -40,6 +40,7 @@ namespace ProcTreeGUI.Pages
                 ConversionDirection == SqlConversionDirection.SqlToCode
                     ? _sqlConverter.ConvertToProgrammingLanguage(TxtSource.Text)
                     : _sqlConverter.ConvertFromProgrammingLanguage(TxtSource.Text);
+            Clipboard.SetText(TxtSource.Text);
         }
 
         private void TxtSource_OnTextChanged(object sender, EventArgs e)
@@ -54,6 +55,11 @@ namespace ProcTreeGUI.Pages
         {
             var handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            TxtSource.Text = Clipboard.GetText();
         }
     }
 }
