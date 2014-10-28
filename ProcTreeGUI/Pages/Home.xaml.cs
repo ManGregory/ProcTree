@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using FirstFloor.ModernUI.Windows.Controls;
 using ProcTree.Core;
 using Clipboard = System.Windows.Clipboard;
 
@@ -24,10 +25,10 @@ namespace ProcTreeGUI.Pages
             InitializeComponent();
             GuiUtils.LoadAvalonSyntax(SyntaxHighlighting.Sql, TxtSource);
             _worker.DoWork += (sender, args) =>
-            {
+            {                
                 var arguments = args.Argument as object[];
                 if (arguments != null)
-                {                    
+                {
                     args.Result = GetUnusedDbObjects(arguments[0].ToString(), arguments[1].ToString(),
                         arguments[2].ToString(), arguments[3].ToString(), arguments[4] as IEnumerable<string>,
                         arguments[5] as IList<string>);
@@ -35,6 +36,12 @@ namespace ProcTreeGUI.Pages
             };
             _worker.RunWorkerCompleted += (sender, args) =>
             {
+                if (args.Error != null)
+                {
+                    ModernDialog.ShowMessage(args.Error.Message + Environment.NewLine + args.Error.StackTrace, "Ошибка", MessageBoxButton.OK);
+                    SwitchOverlay(false);
+                    return;
+                }
                 if (args.Result != null)
                 {
                     var dbObjectUsages = args.Result as List<DbObjectUsage>;
@@ -51,24 +58,31 @@ namespace ProcTreeGUI.Pages
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (!_worker.IsBusy)
+            try
             {
-                if (LstDbObjects.ItemsSource != null)
+                if (!_worker.IsBusy)
                 {
-                    LstDbObjects.ItemsSource = null;
-                    TxtSource.Clear();
+                    if (LstDbObjects.ItemsSource != null)
+                    {
+                        LstDbObjects.ItemsSource = null;
+                        TxtSource.Clear();
+                    }
+                    var argument = new object[]
+                    {
+                        TxtUserName.Text,
+                        TxtUserPassword.Password,
+                        TxtServerName.Text,
+                        TxtDbName.Text,
+                        TxtFolders.Text.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries),
+                        new List<string>(new[] {".pas", ".dfm"})
+                    };
+                    _worker.RunWorkerAsync(argument);
+                    SwitchOverlay(true);
                 }
-                var argument = new object[]
-                {
-                    TxtUserName.Text, 
-                    TxtUserPassword.Password, 
-                    TxtServerName.Text,
-                    TxtDbName.Text, 
-                    TxtFolders.Text.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries),
-                    new List<string>(new[] {".pas", ".dfm"})
-                };
-                _worker.RunWorkerAsync(argument);
-                SwitchOverlay(true);
+            }
+            catch (Exception ex)
+            {
+                ModernDialog.ShowMessage(ex.Message + Environment.NewLine + ex.StackTrace, "Ошибка", MessageBoxButton.OK);
             }
         }
 
@@ -117,26 +131,45 @@ namespace ProcTreeGUI.Pages
         }
 
         private void BtnCreateScript_Click(object sender, RoutedEventArgs e)
-        {            
-            if (LstDbObjects.ItemsSource != null)
+        {
+            try
             {
-                var unusedDbObjects = LstDbObjects.ItemsSource as List<DbObjectUsage>;
-                if (unusedDbObjects != null)
+                if (LstDbObjects.ItemsSource != null)
                 {
-                    ValueContainer.ScriptValues.UnusedDbObjects =
-                        unusedDbObjects.Where(d => d.IsUsed == false).Select(d => d.DbObject).ToList();
-                    var scriptText = string.Join(Environment.NewLine,
-                        new ScriptCreator().CreateDropProcedureScript(ValueContainer.ScriptValues.UnusedDbObjects));
-                    Clipboard.SetText(scriptText);
-                    ValueContainer.ScriptValues.Script = scriptText;
-                    ValueContainer.DbConnectionValues.Repository = new DbObjectRepository(
-                        TxtUserName.Text, TxtUserPassword.Password, TxtServerName.Text, TxtDbName.Text);
-                    NavigationCommands.GoToPage.Execute("/Pages/Script.xaml", this);
+                    var unusedDbObjects = LstDbObjects.ItemsSource as List<DbObjectUsage>;
+                    if (unusedDbObjects != null)
+                    {
+                        ValueContainer.ScriptValues.UnusedDbObjects =
+                            unusedDbObjects.Where(d => d.IsUsed == false).Select(d => d.DbObject).ToList();
+                        var scriptText = string.Join(Environment.NewLine,
+                            new ScriptCreator().CreateDropProcedureScript(ValueContainer.ScriptValues.UnusedDbObjects));
+                        Clipboard.SetText(scriptText);
+                        ValueContainer.ScriptValues.Script = scriptText;
+                        ValueContainer.DbConnectionValues.Repository = new DbObjectRepository(
+                            TxtUserName.Text, TxtUserPassword.Password, TxtServerName.Text, TxtDbName.Text);
+                        NavigationCommands.GoToPage.Execute("/Pages/Script.xaml", this);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                ModernDialog.ShowMessage(ex.Message + Environment.NewLine + ex.StackTrace, "Ошибка", MessageBoxButton.OK);
             }
         }
 
         private void LstDbObjects_OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            try
+            {
+                LoadSelectedItem();
+            }
+            catch (Exception ex)
+            {
+                ModernDialog.ShowMessage(ex.Message + Environment.NewLine + ex.StackTrace, "Ошибка", MessageBoxButton.OK);
+            }
+        }
+
+        private void LoadSelectedItem()
         {
             var dbObjectUsage = LstDbObjects.SelectedItem as DbObjectUsage;
             if (dbObjectUsage != null)
@@ -171,7 +204,7 @@ namespace ProcTreeGUI.Pages
             }
             var fileUsageLine = LstDbObjects.SelectedItem as FileUsageLine;
             if (fileUsageLine != null)
-            {                
+            {
                 LoadFileSource(fileUsageLine.FileUsage);
                 SelectSourceLine(fileUsageLine.LineNumber);
             }

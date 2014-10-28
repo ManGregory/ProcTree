@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using FirstFloor.ModernUI.Windows.Controls;
 using ProcTree.Core.ConvertSql;
 using ProcTreeGUI.Annotations;
 
@@ -36,11 +37,18 @@ namespace ProcTreeGUI.Pages
 
         private void BtnConvert_OnClick(object sender, RoutedEventArgs e)
         {
-            TxtSource.Text =
-                ConversionDirection == SqlConversionDirection.SqlToCode
-                    ? _sqlConverter.ConvertToProgrammingLanguage(TxtSource.Text)
-                    : _sqlConverter.ConvertFromProgrammingLanguage(TxtSource.Text);
-            Clipboard.SetText(TxtSource.Text);
+            try
+            {
+                TxtSource.Text =
+                    ConversionDirection == SqlConversionDirection.SqlToCode
+                        ? _sqlConverter.ConvertToProgrammingLanguage(TxtSource.Text)
+                        : _sqlConverter.ConvertFromProgrammingLanguage(TxtSource.Text);
+                Clipboard.SetText(TxtSource.Text);
+            }
+            catch (Exception ex)
+            {
+                ModernDialog.ShowMessage(ex.Message + Environment.NewLine + ex.StackTrace, "Ошибка", MessageBoxButton.OK);
+            }
         }
 
         private void TxtSource_OnTextChanged(object sender, EventArgs e)
