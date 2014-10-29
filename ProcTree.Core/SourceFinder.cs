@@ -45,28 +45,6 @@ namespace ProcTree.Core
             );
         }
 
-        public static string GetTextWithoutComments(string text)
-        {
-            const string blockComments = @"{(.*?)}";
-            const string lineComments = @"//(.*?)\r?\n";
-            const string strings = @"'((\\[^\n]|[^""\n])*)'";
-            const string verbatimStrings = @"@('[^""]*')+";
-            return Regex.Replace(text,
-                blockComments + "|" + lineComments + "|" + strings + "|" + verbatimStrings,
-                me =>
-                {
-                    if (me.Value.StartsWith("//"))
-                        return Environment.NewLine;
-                    if (me.Value.StartsWith("{"))
-                    {
-                        int count = me.Value.Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.None).Count() - 1;
-                        return string.Concat(Enumerable.Repeat(Environment.NewLine, count));
-                    }
-                    return me.Value;
-                },
-                RegexOptions.Singleline);
-        }
-
         private void ProcessFile(string file, IList<DbObject> valuesToFind)
         {
             const string blockComments = @"{(.*?)}";

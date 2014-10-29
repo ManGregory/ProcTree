@@ -38,7 +38,9 @@ namespace ProcTree.Core.ConvertSql
         private string UnescapeText(string text)
         {
             const string strings = @"'((\\[^\n]|[^""\n])*)'";
-            var stringMatches = Regex.Matches(text, strings, RegexOptions.Singleline);
+            const string blockComments = @"{(.*?)}";
+            const string lineComments = @"//(.*?)\r?\n";
+            var stringMatches = Regex.Matches(text, strings + "|" + blockComments + "|" + lineComments, RegexOptions.Singleline);
             var result = new StringBuilder();
             foreach (Match stringMatch in stringMatches)
             {
@@ -57,10 +59,11 @@ namespace ProcTree.Core.ConvertSql
         private string Convert(string sqlText, SqlConversionDirection direction)
         {
             var builder = new StringBuilder();
-            var lines = sqlText.Split(new[] { LineSeparator }, StringSplitOptions.RemoveEmptyEntries);
+            var text = direction == SqlConversionDirection.CodeToSql ? Utils.GetTextWithoutComments(sqlText) : sqlText;
+            var lines = text.Split(new[] { LineSeparator }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
             {
-                var procLine = direction == SqlConversionDirection.CodeToSql
+                var procLine = direction == SqlConversionDirection.SqlToCode
                     ? CreateBeginMargin() + OpenQuote + EscapeText(line) + ' ' + CloseQuote + ConcatenationSymbol +
                       Environment.NewLine
                     : UnescapeText(line) + Environment.NewLine;
@@ -75,7 +78,7 @@ namespace ProcTree.Core.ConvertSql
             {
                 throw new ArgumentNullException("sqlText");
             }
-            var result = Convert(sqlText, SqlConversionDirection.CodeToSql); 
+            var result = Convert(sqlText, SqlConversionDirection.SqlToCode); 
             return result.Length > 5 ? result.Remove(result.Length - 5, 5) + TerminationSymbol : result;
         }
 
@@ -90,7 +93,7 @@ namespace ProcTree.Core.ConvertSql
             {
                 throw new ArgumentNullException("sqlText");
             }
-            var result = Convert(sqlText, SqlConversionDirection.SqlToCode);
+            var result = Convert(sqlText, SqlConversionDirection.CodeToSql);
             return result.TrimEnd();
         }
 
