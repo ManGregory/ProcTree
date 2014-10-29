@@ -31,26 +31,27 @@ namespace ProcTreeGUI.ViewModel
       while (values.Length > folders.Count) folders.Add(String.Empty);
 
       //this is the collection that gets all top level items
-      List<object> items = new List<object>();
+      var items = new List<object>();
 
       for (int i = 0; i < values.Length; i++)
       {
           //make sure were working with collections from here...
           IEnumerable childs = values[i] as IEnumerable ?? new List<object> {values[i]};
 
-          if (childs.Cast<object>().Any())
+          IEnumerable enumerable = childs as IList<object> ?? childs.Cast<object>().ToList();
+          if (enumerable.Cast<object>().Any())
           {
               string folderName = folders[i];
               if (folderName != String.Empty)
               {
                   //create folder item and assign childs
-                  var folderItem = new FolderItem {Name = folderName, Items = childs};
+                  var folderItem = new FolderItem {Name = folderName, Items = enumerable};
                   items.Add(folderItem);
               }
               else
               {
                   //if no folder name was specified, move the item directly to the root item
-                  items.AddRange(childs.Cast<object>());
+                  items.AddRange(enumerable.Cast<object>());
               }
           }
       }

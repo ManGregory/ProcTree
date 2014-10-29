@@ -2,10 +2,9 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using FirstFloor.ModernUI.Windows.Controls;
 using ProcTree.Core.ConvertSql;
-using ProcTreeGUI.Annotations;
+using ProcTreeGUI.Properties;
 
 namespace ProcTreeGUI.Pages
 {

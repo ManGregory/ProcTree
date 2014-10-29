@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using FirebirdSql.Data.FirebirdClient;
 using ProcTree.Core;
 
 namespace pt
@@ -38,7 +37,7 @@ namespace pt
                 DataSource = args[2],
                 Database = args[3]
             }.ToString());*/
-            File.WriteAllText("uMain2.pas", SourceFinder.GetTextWithoutComments(File.ReadAllText("1.pas")));
+            File.WriteAllText("uMain2.pas", Utils.GetTextWithoutComments(File.ReadAllText("1.pas")));
             Console.ReadLine();
         }  
     }
