@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ProcTree.Core
 {
@@ -59,7 +60,7 @@ namespace ProcTree.Core
         ExternalFileDescription
     }
 
-    public class DbFieldType
+    public class DbField : DbObject
     {
         public DbFirebirdBaseFieldType BaseType { get; set; }
         public DbFirebirdBaseFieldSubType BasedSubType { get; set; }
@@ -69,11 +70,9 @@ namespace ProcTree.Core
         public int CharacterLength { get; set; }
         public string CollationName { get; set; }
         public string CharacterSetName { get; set; }
-    }
-
-    public class DbField
-    {
-        
+        public bool IsNull { get; set; }
+        public string DefaultSource { get; set; }
+        public string ComputedSource { get; set; }
     }
 
     public class DbObject
@@ -81,6 +80,7 @@ namespace ProcTree.Core
         public string Name { get; set; }
         public DbObjectType Type { get; set; }
         public string Source { get; set; }
+        public string Description { get; set; }
         public List<DbObject> LinkedDbOjbects { get; set; }
 
         public DbObject()

@@ -51,12 +51,12 @@ namespace ProcTreeGUI.Pages
             {
                 if (!string.IsNullOrWhiteSpace(TxtScript.Text) && !_worker.IsBusy)
                 {
-                    TxtErrors.Clear();
-                    SwitchOverlay(true);
+                    TxtErrors.Clear();                    
                     if (ChkSaveBackup.IsChecked == true)
                     {
                         ShowSaveBackupDialog();
                     }
+                    SwitchOverlay(true);
                     _worker.RunWorkerAsync(TxtScript.Text);
                 }
             }
@@ -66,7 +66,7 @@ namespace ProcTreeGUI.Pages
             }
         }
 
-        private void ShowSaveBackupDialog()
+        private static void ShowSaveBackupDialog()
         {
             using (var sfd = new SaveFileDialog())
             {
