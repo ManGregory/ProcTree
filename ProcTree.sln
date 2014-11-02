@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "ProcTree.Core\Core.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcTreeGUI", "ProcTreeGUI\ProcTreeGUI.csproj", "{7C15AB13-7A1B-46EF-B609-14C2A1E50051}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Test", "Core.Test\Core.Test.csproj", "{2C12A32A-F9C5-4AC5-9BD2-F99006361A0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{7C15AB13-7A1B-46EF-B609-14C2A1E50051}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C15AB13-7A1B-46EF-B609-14C2A1E50051}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C15AB13-7A1B-46EF-B609-14C2A1E50051}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C12A32A-F9C5-4AC5-9BD2-F99006361A0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C12A32A-F9C5-4AC5-9BD2-F99006361A0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C12A32A-F9C5-4AC5-9BD2-F99006361A0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C12A32A-F9C5-4AC5-9BD2-F99006361A0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
