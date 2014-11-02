@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using Microsoft.SqlServer.Server;
 
 namespace ProcTree.Core
@@ -27,22 +28,20 @@ namespace ProcTree.Core
     public enum DbFirebirdBaseFieldType
     {
         Unknown = -1,
-        SmallInt = 7,
-        Integer = 8,
-        Int64 = 16,
+        Short = 7,
+        Long = 8,
         Quad = 9,
         Float = 10,
-        DFloat = 11,
-        Boolean = 17,
-        Double = 27,
         Date = 12,
         Time = 13,
+        Text = 14, // char
+        Int64 = 16,
+        Double = 27,
         Timestamp = 35,
-        Blob = 261,
-        Varchar = 37,
-        Char = 14,
+        Varying = 37, // varchar
         CString = 40,
-        BlobId = 45
+        BlobId = 45,
+        Blob = 261
     }
 
     public enum DbFirebirdBaseFieldSubType
@@ -71,7 +70,7 @@ namespace ProcTree.Core
 
     public enum ParameterMechanism
     {
-        Traditional = 0,
+        Normal = 0,
         TypeOf = 1
     }
 
@@ -128,7 +127,7 @@ namespace ProcTree.Core
     public class DbField : LinkedDbObject
     {
         public DbFirebirdBaseFieldType BaseType { get; set; }
-        public DbFirebirdBaseFieldSubType BasedSubType { get; set; }
+        public DbFirebirdBaseFieldSubType SubType { get; set; }
         public int Length { get; set; }
         public int Scale { get; set; }
         public int Precision { get; set; }
@@ -139,9 +138,41 @@ namespace ProcTree.Core
         public string DefaultSource { get; set; }
         public string ComputedSource { get; set; }
 
+        public static Dictionary<DbFirebirdBaseFieldType, string> TypeNames = new Dictionary
+            <DbFirebirdBaseFieldType, string>
+        {
+            {DbFirebirdBaseFieldType.Short, "SMALLINT"},
+            {DbFirebirdBaseFieldType.Long, "INTEGER"},
+            {DbFirebirdBaseFieldType.Quad, "BIGINT"},
+            {DbFirebirdBaseFieldType.Int64, "BIGINT"},
+            {DbFirebirdBaseFieldType.Varying, "VARCHAR"},
+            {DbFirebirdBaseFieldType.Text, "CHAR"}
+        };
+
         public override string GetDdl()
         {
-            return BaseType.ToString().ToUpper();
+            var res = BaseType.ToString().ToUpper();
+            if ((BaseType == DbFirebirdBaseFieldType.Short) ||
+                (BaseType == DbFirebirdBaseFieldType.Long) ||
+                (BaseType == DbFirebirdBaseFieldType.Quad) ||
+                (BaseType == DbFirebirdBaseFieldType.Int64))
+            {
+                if (SubType == DbFirebirdBaseFieldSubType.Unknown)
+                {
+                    res = TypeNames.ContainsKey(BaseType) ? TypeNames[BaseType] : BaseType.ToString();
+                }
+                else if ((SubType == DbFirebirdBaseFieldSubType.Numeric) || (SubType == DbFirebirdBaseFieldSubType.Decimal))
+                {
+                    res = string.Format("{0}({1},{2})", SubType, Precision, Scale);
+                }
+            } 
+            else if ((BaseType == DbFirebirdBaseFieldType.Text) ||
+                     (BaseType == DbFirebirdBaseFieldType.Varying))
+            {
+                res = string.Format("{0}({1}) {2}", TypeNames[BaseType], CharacterLength, 
+                    string.Format("CHARACTER SET {0}", CharacterSet.Name));
+            }
+            return res;
         }
     }
 
@@ -150,7 +181,6 @@ namespace ProcTree.Core
         public int OrderNumber { get; set; }
         public ParameterType ParameterType { get; set; }
         public DbField Field { get; set; }
-        public CharacterSet CharacterSet { get; set; }
         public Collation Collation { get; set; }
         public bool IsNull { get; set; }
         public ParameterMechanism ParameterMechanism { get; set; }
@@ -160,12 +190,13 @@ namespace ProcTree.Core
 
         public override string GetDdl()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5}", 
+            return string.Format("{0} {1} {2} {3} {4}", 
                 Name, 
                 GetSqlType(), 
                 IsNull ? string.Empty : "NOT NULL",
-                CharacterSet == null ? string.Empty : string.Format("CHARACTER SET {0}", CharacterSet.Name),
-                Collation == null ? string.Empty : string.Format("COLLATE {0}", Collation.Name), 
+                Collation == null 
+                    ? Field.Collation == null ? string.Empty : Field.Collation.Name 
+                    : string.Format("COLLATE {0}", Collation.Name),
                 GetDefaultSql());
         }
 
@@ -178,8 +209,8 @@ namespace ProcTree.Core
 
         private string GetSqlType()
         {
-            return ParameterMechanism == ParameterMechanism.Traditional
-                ? Field.Name
+            return ParameterMechanism == ParameterMechanism.Normal
+                ? Field.GetDdl()
                 : string.Format("TYPE OF COLUMN {0}.{1}", RelationName, FieldName);
         }
     }
