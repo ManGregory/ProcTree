@@ -23,7 +23,7 @@ namespace ProcTree.Core
             DbObjectUsageFiles = dbObjectUsageFiles;
         }
 
-        public void FindObjectUsages(IEnumerable<string> baseDirs, IList<string> searchPatterns, IList<DbObject> objectsToFind)
+        public void FindObjectUsages(IEnumerable<string> baseDirs, IList<string> searchPatterns, IList<LinkedDbObject> objectsToFind)
         {
             foreach (var baseDir in baseDirs)
             {
@@ -32,7 +32,7 @@ namespace ProcTree.Core
         }
 
         private void FindObjectUsage(string baseDir, IList<string> searchPatterns,
-            IList<DbObject> objectsToFind)
+            IList<LinkedDbObject> objectsToFind)
         {
             var dirInfo = new DirectoryInfo(baseDir);
             const bool forceNonParallel = false;
@@ -45,7 +45,7 @@ namespace ProcTree.Core
             );
         }
 
-        private void ProcessFile(string file, IList<DbObject> valuesToFind)
+        private void ProcessFile(string file, IList<LinkedDbObject> valuesToFind)
         {
             const string blockComments = @"{(.*?)}";
             const string lineComments = @"//(.*?)\r?\n";
@@ -67,7 +67,7 @@ namespace ProcTree.Core
             }
         }
 
-        private void FindUsages(string file, IList<DbObject> valuesToFind, string[] lines, int beginLine)
+        private void FindUsages(string file, IList<LinkedDbObject> valuesToFind, string[] lines, int beginLine)
         {
             for (var lineNumber = 0; lineNumber < lines.Length; lineNumber++)
             {

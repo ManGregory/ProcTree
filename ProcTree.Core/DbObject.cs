@@ -163,7 +163,7 @@ namespace ProcTree.Core
                 }
                 else if ((SubType == DbFirebirdBaseFieldSubType.Numeric) || (SubType == DbFirebirdBaseFieldSubType.Decimal))
                 {
-                    res = string.Format("{0}({1},{2})", SubType, Precision, Scale);
+                    res = string.Format("{0}({1},{2})", SubType.ToString().ToUpper(), Precision, Scale);
                 }
             } 
             else if ((BaseType == DbFirebirdBaseFieldType.Text) ||

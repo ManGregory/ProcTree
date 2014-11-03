@@ -4,6 +4,6 @@ namespace ProcTree.Core
 {
     public interface IDbObjectRepository
     {
-        IEnumerable<DbObject> GetDbObjects();
+        IEnumerable<LinkedDbObject> GetDbObjects();
     }
 }

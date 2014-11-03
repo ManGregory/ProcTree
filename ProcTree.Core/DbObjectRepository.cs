@@ -53,7 +53,7 @@ namespace ProcTree.Core
             );
         }
 
-        IEnumerable<DbObject> IDbObjectRepository.GetDbObjects()
+        IEnumerable<LinkedDbObject> IDbObjectRepository.GetDbObjects()
         {
             using (var conn = GetConnection())
             {
@@ -63,7 +63,7 @@ namespace ProcTree.Core
                 var table = new DataTable();
                 table.Load(reader);
                 var dbObjects = (from DataRow row in table.Rows
-                    select new DbObject
+                    select new LinkedDbObject
                     {
                         Name = row["oname"].ToString().Trim().ToLower(CultureInfo.InvariantCulture),
                         Source = row["osource"].ToString().Trim().ToLower(CultureInfo.InvariantCulture),
@@ -85,7 +85,7 @@ namespace ProcTree.Core
             }
         }
 
-        protected virtual void MakeLinks(List<DbObject> dbObjects)
+        protected virtual void MakeLinks(List<LinkedDbObject> dbObjects)
         {
             if (dbObjects == null)
             {
@@ -106,7 +106,7 @@ namespace ProcTree.Core
             }
         }
 
-        public static IEnumerable<DbObject> GetUnusedDbObjects(List<DbObject> dbObjects)
+        public static IEnumerable<DbObject> GetUnusedDbObjects(List<LinkedDbObject> dbObjects)
         {
             return (from dbObj in dbObjects.Where(d => d.Type == DbObjectType.Procedure)
                 let isUsed = dbObjects.Any(dbObj1 => dbObj1.LinkedDbOjbects.Contains(dbObj))
@@ -114,7 +114,7 @@ namespace ProcTree.Core
                 select dbObj).ToList();
         }
 
-        public static IEnumerable<DbObjectUsageProcedure> GetDbObjectUsages(DbObject dbObject, IList<DbObject> dbObjects)
+        public static IEnumerable<DbObjectUsageProcedure> GetDbObjectUsages(LinkedDbObject dbObject, IList<LinkedDbObject> dbObjects)
         {
             var dbObjectUsages = new List<DbObjectUsageProcedure>();
             foreach (var d in dbObjects)
@@ -157,7 +157,7 @@ namespace ProcTree.Core
 
         }
 
-        protected virtual void MakeLinks(List<DbObject> dbObjects, FbConnection conn)
+        protected virtual void MakeLinks(List<LinkedDbObject> dbObjects, FbConnection conn)
         {
             foreach (var dbObject in dbObjects)
             {
@@ -169,21 +169,21 @@ namespace ProcTree.Core
             }
         }
 
-        private IEnumerable<DbObject> GetDependencies(DbObject dbObject, FbConnection conn)
+        private IEnumerable<LinkedDbObject> GetDependencies(LinkedDbObject dbObject, FbConnection conn)
         {
             var cmd = new FbCommand("select distinct rd.RDB$DEPENDED_ON_NAME as name, rd.RDB$DEPENDED_ON_TYPE as type from RDB$DEPENDENCIES rd where rd.RDB$DEPENDENT_NAME = @object_name", conn);
             cmd.Parameters.Add("@object_name", FbDbType.VarChar, 100).Value = dbObject.Name.ToUpperInvariant();
             var table = new DataTable();
             table.Load(cmd.ExecuteReader());
             return (from DataRow row in table.Rows
-                select new DbObject
+                select new LinkedDbObject
                 {
                     Name = row["name"].ToString().ToLowerInvariant().Trim(),
                     Type = (DbObjectType) Enum.ToObject(typeof(DbObjectType), row["type"])
                 });
         }
 
-        IEnumerable<DbObject> IDbObjectRepository.GetDbObjects()
+        IEnumerable<LinkedDbObject> IDbObjectRepository.GetDbObjects()
         {
             using (var conn = GetConnection())
             {
@@ -193,7 +193,7 @@ namespace ProcTree.Core
                 var table = new DataTable();
                 table.Load(reader);
                 var dbObjects = (from DataRow row in table.Rows
-                    select new DbObject
+                    select new LinkedDbObject
                     {
                         Name = row["oname"].ToString().Trim().ToLower(CultureInfo.InvariantCulture),
                         Source = row["osource"].ToString().Trim().ToLower(CultureInfo.InvariantCulture),

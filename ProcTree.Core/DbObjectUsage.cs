@@ -4,7 +4,7 @@ namespace ProcTree.Core
 {
     public class DbObjectUsage
     {
-        public DbObject DbObject { get; set; }
+        public LinkedDbObject DbObject { get; set; }
         public IEnumerable<DbObjectUsageProcedure> DbUsages { get; set; }
         public IEnumerable<DbObjectUsageFile> SourceFileUsages { get; set; }
         public bool IsUsed { get; set; }
@@ -12,7 +12,7 @@ namespace ProcTree.Core
 
     public class DbObjectUsageProcedure 
     {
-        public DbObject DbObject { get; set; }
+        public LinkedDbObject DbObject { get; set; }
         public IEnumerable<ProcedureUsageLine> LineNumbers { get; set; } 
 
         public override string ToString()

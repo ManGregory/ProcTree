@@ -17,7 +17,7 @@ namespace ProcTreeGUI
         public static class ScriptValues
         {
             public static string Script { get; set; }
-            public static IList<DbObject> UnusedDbObjects { get; set; }
+            public static IList<LinkedDbObject> UnusedDbObjects { get; set; }
         }
     }
 }
