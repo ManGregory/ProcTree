@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml;
-using Microsoft.SqlServer.Server;
 
 namespace ProcTree.Core
 {
@@ -134,24 +132,24 @@ namespace ProcTree.Core
         public int CharacterLength { get; set; }
         public Collation Collation { get; set; }
         public CharacterSet CharacterSet { get; set; }
-        public bool IsNull { get; set; }
+        public bool IsAllowNull { get; set; }
         public string DefaultSource { get; set; }
         public string ComputedSource { get; set; }
 
         public static Dictionary<DbFirebirdBaseFieldType, string> TypeNames = new Dictionary
             <DbFirebirdBaseFieldType, string>
         {
-            {DbFirebirdBaseFieldType.Short, "SMALLINT"},
-            {DbFirebirdBaseFieldType.Long, "INTEGER"},
-            {DbFirebirdBaseFieldType.Quad, "BIGINT"},
-            {DbFirebirdBaseFieldType.Int64, "BIGINT"},
-            {DbFirebirdBaseFieldType.Varying, "VARCHAR"},
-            {DbFirebirdBaseFieldType.Text, "CHAR"}
+            {DbFirebirdBaseFieldType.Short, "smallint"},
+            {DbFirebirdBaseFieldType.Long, "integer"},
+            {DbFirebirdBaseFieldType.Quad, "bigint"},
+            {DbFirebirdBaseFieldType.Int64, "bigint"},
+            {DbFirebirdBaseFieldType.Varying, "varchar"},
+            {DbFirebirdBaseFieldType.Text, "char"}
         };
 
         public override string GetDdl()
         {
-            var res = BaseType.ToString().ToUpper();
+            var res = BaseType.ToString().ToLower();
             if ((BaseType == DbFirebirdBaseFieldType.Short) ||
                 (BaseType == DbFirebirdBaseFieldType.Long) ||
                 (BaseType == DbFirebirdBaseFieldType.Quad) ||
@@ -159,18 +157,18 @@ namespace ProcTree.Core
             {
                 if (SubType == DbFirebirdBaseFieldSubType.Unknown)
                 {
-                    res = TypeNames.ContainsKey(BaseType) ? TypeNames[BaseType] : BaseType.ToString();
+                    res = TypeNames.ContainsKey(BaseType) ? TypeNames[BaseType] : BaseType.ToString().ToLower();
                 }
                 else if ((SubType == DbFirebirdBaseFieldSubType.Numeric) || (SubType == DbFirebirdBaseFieldSubType.Decimal))
                 {
-                    res = string.Format("{0}({1},{2})", SubType.ToString().ToUpper(), Precision, Scale);
+                    res = string.Format("{0}({1},{2})", SubType.ToString().ToLower(), Precision, Scale);
                 }
             } 
             else if ((BaseType == DbFirebirdBaseFieldType.Text) ||
                      (BaseType == DbFirebirdBaseFieldType.Varying))
             {
-                res = string.Format("{0}({1}) {2}", TypeNames[BaseType], CharacterLength, 
-                    string.Format("CHARACTER SET {0}", CharacterSet.Name));
+                res = string.Format("{0}({1}) {2}", TypeNames[BaseType], CharacterLength,
+                    CharacterSet == null ? string.Empty : string.Format("character set {0}", CharacterSet.Name)).Trim();
             }
             return res;
         }
@@ -182,7 +180,7 @@ namespace ProcTree.Core
         public ParameterType ParameterType { get; set; }
         public DbField Field { get; set; }
         public Collation Collation { get; set; }
-        public bool IsNull { get; set; }
+        public bool IsAllowNull { get; set; }
         public ParameterMechanism ParameterMechanism { get; set; }
         public string FieldName { get; set; }
         public string RelationName { get; set; }
@@ -191,13 +189,13 @@ namespace ProcTree.Core
         public override string GetDdl()
         {
             return string.Format("{0} {1} {2} {3} {4}", 
-                Name, 
+                Name.ToUpper(), 
                 GetSqlType(), 
-                IsNull ? string.Empty : "NOT NULL",
+                IsAllowNull ? string.Empty : "not null",
                 Collation == null 
-                    ? Field.Collation == null ? string.Empty : Field.Collation.Name 
-                    : string.Format("COLLATE {0}", Collation.Name),
-                GetDefaultSql());
+                    ? Field.Collation == null ? string.Empty : string.Format("collation {0}", Field.Collation.Name) 
+                    : string.Format("collation {0}", Collation.Name),
+                GetDefaultSql()).Trim();
         }
 
         private string GetDefaultSql()
@@ -211,7 +209,7 @@ namespace ProcTree.Core
         {
             return ParameterMechanism == ParameterMechanism.Normal
                 ? Field.GetDdl()
-                : string.Format("TYPE OF COLUMN {0}.{1}", RelationName, FieldName);
+                : string.Format("type of column {0}.{1}", RelationName.ToUpper(), FieldName.ToUpper());
         }
     }
 
@@ -233,6 +231,7 @@ namespace ProcTree.Core
             sb.Append(string.Format("({0}) returns ({1})", 
                 DdlCreationUtils.CreateParameteresList(Parameters.Where(p => p.ParameterType == ParameterType.Input)),
                 DdlCreationUtils.CreateParameteresList(Parameters.Where(p => p.ParameterType == ParameterType.Output))));
+            sb.Append(Source);
             sb.Append(DdlCreationUtils.SetTerm(false));
             return sb.ToString();
         }
