@@ -192,10 +192,17 @@ namespace ProcTree.Core
                 Name.ToUpper(), 
                 GetSqlType(), 
                 IsAllowNull ? string.Empty : "not null",
-                Collation == null 
-                    ? Field.Collation == null ? string.Empty : string.Format("collation {0}", Field.Collation.Name) 
-                    : string.Format("collation {0}", Collation.Name),
+                GetCollationString(),
                 GetDefaultSql()).Trim();
+        }
+
+        private string GetCollationString()
+        {
+            return Collation == null
+                ? Field != null
+                    ? Field.Collation == null ? string.Empty : string.Format("collation {0}", Field.Collation.Name)
+                    : string.Empty
+                : string.Format("collation {0}", Collation.Name);
         }
 
         private string GetDefaultSql()
@@ -226,13 +233,16 @@ namespace ProcTree.Core
         public override string GetDdl()
         {
             var sb = new StringBuilder();
-            sb.Append(DdlCreationUtils.SetTerm(true));
-            sb.Append(DdlCreationUtils.CreateOrAlter(this));
-            sb.Append(string.Format("({0}) returns ({1})", 
-                DdlCreationUtils.CreateParameteresList(Parameters.Where(p => p.ParameterType == ParameterType.Input)),
+            sb.Append(string.Format("{0}\r\n\r\n", DdlCreationUtils.SetTerm(true)));
+            sb.Append(string.Format("{0}(\r\n", DdlCreationUtils.CreateOrAlter(this)));
+            sb.Append(string.Format("{0})\r\n", 
+                DdlCreationUtils.CreateParameteresList(Parameters.Where(p => p.ParameterType == ParameterType.Input))));
+            sb.Append(string.Format("returns (\r\n"));
+            sb.Append(string.Format("{0})\r\n",
                 DdlCreationUtils.CreateParameteresList(Parameters.Where(p => p.ParameterType == ParameterType.Output))));
-            sb.Append(Source);
-            sb.Append(DdlCreationUtils.SetTerm(false));
+            sb.Append("as\r\n");
+            sb.Append(string.Format("{0}^\r\n\r\n", Source));
+            sb.Append(string.Format("{0}", DdlCreationUtils.SetTerm(false)));
             return sb.ToString();
         }
     }

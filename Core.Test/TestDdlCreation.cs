@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProcTree.Core;
 
@@ -225,7 +226,8 @@ namespace Core.Test
                 ParameterType = ParameterType.Input,
                 ParameterMechanism = ParameterMechanism.TypeOf,
                 FieldName = "K_NUM",
-                RelationName = "DOC_ORDER"
+                RelationName = "DOC_ORDER",
+                IsAllowNull = true
             };
             var param2 = new DbProcedureParameter
             {
@@ -233,7 +235,8 @@ namespace Core.Test
                 ParameterType = ParameterType.Input,
                 ParameterMechanism = ParameterMechanism.TypeOf,
                 FieldName = "K_YEAR",
-                RelationName = "DOC_ORDER"
+                RelationName = "DOC_ORDER",
+                IsAllowNull = true
             };
             var param3 = new DbProcedureParameter
             {
@@ -241,7 +244,8 @@ namespace Core.Test
                 ParameterType = ParameterType.Input,
                 ParameterMechanism = ParameterMechanism.TypeOf,
                 FieldName = "ID_ART",
-                RelationName = "DOC_BY_ZAYAVKA_H"
+                RelationName = "DOC_BY_ZAYAVKA_H",
+                IsAllowNull = true
             };
             var param4 = new DbProcedureParameter
             {
@@ -249,15 +253,17 @@ namespace Core.Test
                 ParameterType = ParameterType.Input,
                 ParameterMechanism = ParameterMechanism.TypeOf,
                 FieldName = "ID_CFO",
-                RelationName = "DOC_BY_ZAYAVKA_H"
+                RelationName = "DOC_BY_ZAYAVKA_H",
+                IsAllowNull = true
             };
             var param5 = new DbProcedureParameter
             {
-                Name = "USER_ID",
+                Name = "ID_USER",
                 ParameterType = ParameterType.Input,
                 ParameterMechanism = ParameterMechanism.TypeOf,
                 FieldName = "ID",
-                RelationName = "USER_BUDGET"
+                RelationName = "USER_BUDGET",
+                IsAllowNull = true
             };
             var param6 = new DbProcedureParameter
             {
@@ -265,7 +271,8 @@ namespace Core.Test
                 ParameterType = ParameterType.Output,
                 ParameterMechanism = ParameterMechanism.TypeOf,
                 FieldName = "ID",
-                RelationName = "DOC_BY_CORRECT_H"
+                RelationName = "DOC_BY_CORRECT_H",
+                IsAllowNull = true
             };
             paramList.AddRange(new[] {param1, param2, param3, param4, param5, param6});
             var proc = new DbProcedure
@@ -276,7 +283,9 @@ namespace Core.Test
                 Source =
                     "begin\r\ninsert into doc_by_correct_h (tip, vd, c_year, c_text, id_art, id_cfo, is_checking, is_checked, is_signed, is_permitted, is_del)\r\nvalues (3, :quarter, :zayavka_year, '', :id_art, :id_cfo, 0, 0, 0, 0, 0)\r\nreturning id into :correct_id;\r\n\r\ninsert into doc_action (id_doc, id_act, vid, act_user_id)\r\nvalues (:correct_id, 1, 8, :id_user);\r\n\r\nsuspend;\r\nend"
             };
-            Assert.AreEqual(proc.GetDdl(), "");
+            File.WriteAllText("1.txt", proc.GetDdl());
+            Assert.AreEqual(proc.GetDdl(),
+                "SET TERM ^ ;\r\n\r\nCREATE OR ALTER PROCEDURE CREATE_UPP_YEAR_CORRECT(\r\nQUARTER type of column DOC_ORDER.K_NUM, \r\nZAYAVKA_YEAR type of column DOC_ORDER.K_YEAR, \r\nID_ART type of column DOC_BY_ZAYAVKA_H.ID_ART, \r\nID_CFO type of column DOC_BY_ZAYAVKA_H.ID_CFO, \r\nID_USER type of column USER_BUDGET.ID)\r\nreturns (\r\nCORRECT_ID type of column DOC_BY_CORRECT_H.ID)\r\nas\r\nbegin\r\ninsert into doc_by_correct_h (tip, vd, c_year, c_text, id_art, id_cfo, is_checking, is_checked, is_signed, is_permitted, is_del)\r\nvalues (3, :quarter, :zayavka_year, '', :id_art, :id_cfo, 0, 0, 0, 0, 0)\r\nreturning id into :correct_id;\r\n\r\ninsert into doc_action (id_doc, id_act, vid, act_user_id)\r\nvalues (:correct_id, 1, 8, :id_user);\r\n\r\nsuspend;\r\nend^\r\n\r\nSET TERM ; ^");
         }
     }
 }
